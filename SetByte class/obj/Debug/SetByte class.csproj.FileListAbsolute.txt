@@ -1,0 +1,7 @@
+D:\C# scripts\SetByte class\bin\Debug\SetByte class.exe.config
+D:\C# scripts\SetByte class\bin\Debug\SetByte class.exe
+D:\C# scripts\SetByte class\bin\Debug\SetByte class.pdb
+D:\C# scripts\SetByte class\obj\Debug\SetByte class.csprojAssemblyReference.cache
+D:\C# scripts\SetByte class\obj\Debug\SetByte class.csproj.CoreCompileInputs.cache
+D:\C# scripts\SetByte class\obj\Debug\SetByte class.exe
+D:\C# scripts\SetByte class\obj\Debug\SetByte class.pdb
