@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/SetByte class/bin/Debug
+/SetByte class/obj/Debug
+*.suo
+/MyFileSync/MyFileSync/obj/Debug
+/MyFileSync/MyFileSync.Console/bin/Debug
+/MyFileSync/MyFileSync.Console/obj/Debug
