@@ -5,6 +5,7 @@
 /SetByte class/bin/Debug
 /SetByte class/obj/Debug
 *.suo
+*.user
 /MyFileSync/MyFileSync/obj/Debug
 /MyFileSync/MyFileSync.Console/bin/Debug
 /MyFileSync/MyFileSync.Console/obj/Debug
