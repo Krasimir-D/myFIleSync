@@ -70,5 +70,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyFileSync.Console\MyFileSync.Console.csproj">
+      <Project>{2276a6f7-aa0b-4811-af85-04a23a74ac05}</Project>
+      <Name>MyFileSync.Console</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

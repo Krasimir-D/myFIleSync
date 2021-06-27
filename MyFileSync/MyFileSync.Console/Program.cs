@@ -7,10 +7,18 @@ using System.Windows.Forms;
 
 namespace MyFileSync.Console
 {
-	static class Program
-	{
+    static class Program
+    {
         private static NotifyIcon _notifyIcon;
         private static MyFileSync.Console.Main _form;
+
+        public static NotifyIcon NotifyIcon
+        {
+            get
+			{
+                return _notifyIcon;
+			}
+        }
 
         /// <summary>
         /// The main entry point for the application.
@@ -54,12 +62,17 @@ namespace MyFileSync.Console
             Program._notifyIcon.MouseClick += new MouseEventHandler(Program.NotifyIcon_MouseClick);
             Program._notifyIcon.Visible = true;
 
+			Application.ApplicationExit += Application_ApplicationExit;
+
             Application.Run();
+        }
 
+		private static void Application_ApplicationExit(object sender, EventArgs e)
+		{
+            Program._notifyIcon.Dispose();
+        }
 
-		}
-
-        private static MyFileSync.Console.Main Form
+		private static MyFileSync.Console.Main Form
         {
             get
             {
@@ -88,7 +101,6 @@ namespace MyFileSync.Console
 
         private static void ExitItem_Click(object sender, EventArgs e)
         {
-            Program._notifyIcon.Dispose();
             Application.Exit();
         }
 
