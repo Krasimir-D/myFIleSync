@@ -82,5 +82,11 @@
   <ItemGroup>
     <EmbeddedResource Include="Google-Drive.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyFileSync\MyFileSync.csproj">
+      <Project>{6c3d37d1-f3f4-48df-990d-c222438e0763}</Project>
+      <Name>MyFileSync</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

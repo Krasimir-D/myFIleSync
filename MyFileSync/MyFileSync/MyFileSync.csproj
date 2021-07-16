@@ -46,6 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config\Configuration.cs">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Config\Configuration.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Enumerators\Enums.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -57,6 +66,17 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Config\Configuration.xsc">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </None>
+    <None Include="Config\Configuration.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>Configuration.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Config\Configuration.xss">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -69,12 +89,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\MyFileSync.Console\MyFileSync.Console.csproj">
-      <Project>{2276a6f7-aa0b-4811-af85-04a23a74ac05}</Project>
-      <Name>MyFileSync.Console</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
