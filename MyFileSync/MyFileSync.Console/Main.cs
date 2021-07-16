@@ -69,5 +69,20 @@ namespace MyFileSync.Console
 				notifyIcon1.Visible = true;
 			}
 		}
-    }
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			MyFileSync.Watcher.Instance.Start();
+		}
+
+		private void button2_Click(object sender, EventArgs e)
+		{
+			MyFileSync.Watcher.Instance.Debug();
+		}
+
+		private void button3_Click(object sender, EventArgs e)
+		{
+			ConfigManager.Save(null);
+		}
+	}
 }
