@@ -84,5 +84,10 @@ namespace MyFileSync.Console
 		{
 			ConfigManager.Save(null);
 		}
+
+		private void button4_Click(object sender, EventArgs e)
+		{
+			MyFileSync.Watcher.Instance.Raw2Aggregate();
+		}
 	}
 }

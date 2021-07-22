@@ -37,6 +37,7 @@ namespace MyFileSync.Console
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
+			this.button4 = new System.Windows.Forms.Button();
 			this.SuspendLayout();
 			// 
 			// notifyIcon1
@@ -48,7 +49,7 @@ namespace MyFileSync.Console
 			// txtNotif
 			// 
 			this.txtNotif.Location = new System.Drawing.Point(329, 322);
-			this.txtNotif.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.txtNotif.Margin = new System.Windows.Forms.Padding(2);
 			this.txtNotif.Name = "txtNotif";
 			this.txtNotif.Size = new System.Drawing.Size(146, 20);
 			this.txtNotif.TabIndex = 2;
@@ -56,7 +57,7 @@ namespace MyFileSync.Console
 			// btnPush
 			// 
 			this.btnPush.Location = new System.Drawing.Point(94, 316);
-			this.btnPush.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+			this.btnPush.Margin = new System.Windows.Forms.Padding(2);
 			this.btnPush.Name = "btnPush";
 			this.btnPush.Size = new System.Drawing.Size(124, 24);
 			this.btnPush.TabIndex = 3;
@@ -94,11 +95,22 @@ namespace MyFileSync.Console
 			this.button3.UseVisualStyleBackColor = true;
 			this.button3.Click += new System.EventHandler(this.button3_Click);
 			// 
+			// button4
+			// 
+			this.button4.Location = new System.Drawing.Point(558, 148);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(75, 23);
+			this.button4.TabIndex = 6;
+			this.button4.Text = "Aggregate";
+			this.button4.UseVisualStyleBackColor = true;
+			this.button4.Click += new System.EventHandler(this.button4_Click);
+			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.Controls.Add(this.button4);
 			this.Controls.Add(this.button3);
 			this.Controls.Add(this.button2);
 			this.Controls.Add(this.button1);
@@ -122,6 +134,7 @@ namespace MyFileSync.Console
 		private System.Windows.Forms.Button button1;
 		private System.Windows.Forms.Button button2;
 		private System.Windows.Forms.Button button3;
+		private System.Windows.Forms.Button button4;
 	}
 }
 

@@ -17,17 +17,26 @@ namespace MyFileSync
 			Move,
 			FileChange
 		}
+		public enum AggregateType
+		{
+			Move,
+			NewFolder
+		}
 		public struct WatchNotification
 		{
-			string Path;
-			DateTime Time;
-			FileSystemActionType Type;
+			public string Path;
+			public string OldPath;
+			public DateTime Time;
+			public FileSystemActionType Type;
+			public int ChildrenCount;
 
 			internal WatchNotification(string path, DateTime time, FileSystemActionType type)
 			{
 				this.Path = path;
+				this.OldPath = "";
 				this.Time = time;
 				this.Type = type;
+				this.ChildrenCount = 0;
 			}
 		}
 
@@ -49,6 +58,7 @@ namespace MyFileSync
 		private static Dictionary<char, List<PathValue?>> _paths;
 		#endregion
 
+		private Queue<WatchNotification> _rawNotifications;
 		private List<WatchNotification> _notifications;
 		private List<FileSystemWatcher> _systemWatchers;
 
@@ -103,13 +113,17 @@ namespace MyFileSync
 
 		private Watcher(List<char> driveLetters)
 		{
+			this._rawNotifications = new Queue<WatchNotification>();
 			this._notifications = new List<WatchNotification>();
 			this._systemWatchers = new List<FileSystemWatcher>();
-			foreach(char letter in driveLetters)
+			foreach (char letter in driveLetters)
 			{
 				var watcher = new FileSystemWatcher(String.Format("{0}:\\", letter));
 				watcher.EnableRaisingEvents = true;
 				watcher.IncludeSubdirectories = true;
+				watcher.NotifyFilter = NotifyFilters.DirectoryName
+									 | NotifyFilters.FileName
+									 | NotifyFilters.LastWrite;
 				_systemWatchers.Add(watcher);
 			}
 		}
@@ -127,15 +141,48 @@ namespace MyFileSync
 
 		public void Debug()
 		{
-			int count = this._notifications.Count;
+			int count = this._rawNotifications.Count;
+
+			//string test = CommonUtility.NormalizePath(@"C:\Users\FilipD\AppData\Local\Microsoft\Edge\User Data\Default\Service Worker\CacheStorage\7bdbbfec6db2a08f00d7b918391e00812b956f61\443dbc0a-1022-4d9b-8257-530ceba561e9\index-dir\the-real-index~RF222b7a5e.TMP");
+
+			//string test2 = Path.GetDirectoryName(test);
+
+			//test2 = Path.GetDirectoryName(test2);
+
 		}
 
 		private void Watcher_Event(object sender, FileSystemEventArgs e)
 		{
 			List<PathValue?> paths = Paths[((FileSystemWatcher)sender).Path[0]];
 
+			WatchActionType actionType = FindActionType(paths, e.FullPath);
+
+			if (actionType == WatchActionType.Ignore)
+				return;
+
+			if (e.ChangeType == WatcherChangeTypes.Changed && !this.isFile(e.FullPath))
+				return;
+
+			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
+
+			DateTime time = DateTime.Now;
+
+			FileSystemActionType type = FileSystemActionType.Create;
+			if (e.ChangeType == WatcherChangeTypes.Created)
+				type = FileSystemActionType.Create;
+			else if (e.ChangeType == WatcherChangeTypes.Deleted)
+				type = FileSystemActionType.Delete;
+			else if (e.ChangeType == WatcherChangeTypes.Changed)
+				type = FileSystemActionType.FileChange;
+
+			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
+			this._rawNotifications.Enqueue(ntf);
+		}
+
+		private static WatchActionType FindActionType(List<PathValue?> paths, string path)
+		{
+			path = CommonUtility.NormalizePath(path);
 			WatchActionType actionType = WatchActionType.Watch;
-			string path = CommonUtility.NormalizePath(e.FullPath);
 			while (path != null)
 			{
 				var match = paths.Find(p => p.Value.Path == path);
@@ -149,26 +196,7 @@ namespace MyFileSync
 					path = Path.GetDirectoryName(path);
 				}
 			}
-
-			if (actionType == WatchActionType.Ignore)
-				return;
-
-			if (e.ChangeType == WatcherChangeTypes.Changed)			{
-				FileInfo fi = new FileInfo(e.FullPath);
-				if (!fi.Exists)
-					return;
-			}
-
-			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
-
-			//TODO
-			if (e.ChangeType == WatcherChangeTypes.Created)
-			{
-				var not = new WatchNotification(e.FullPath, DateTime.Now, FileSystemActionType.Create);
-				this._notifications.Add(new WatchNotification(e.FullPath, DateTime.Now, FileSystemActionType.Create));
-
-
-			}
+			return actionType;
 		}
 
 		private void Watcher_Renamed(object sender, RenamedEventArgs e)
@@ -178,6 +206,70 @@ namespace MyFileSync
 
 			//TODO
 			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
+		}
+
+		public void Raw2Aggregate()
+		{
+			while(this._rawNotifications.Count == 0)
+			{
+				var ntf = this._rawNotifications.Peek();
+
+				var result = this.CheckIfCanAddToExisting(ntf);
+
+				if (result == null)
+				{
+					this._notifications.Add(ntf);
+				}
+				else //add to existing
+				{
+					var existingNtf = result.Item1;
+					if (result.Item2 == AggregateType.Move)
+					{
+						if (existingNtf.Type == FileSystemActionType.Create)
+						{
+							existingNtf.OldPath = ntf.Path;
+						}
+						else if (existingNtf.Type == FileSystemActionType.Delete)
+						{
+							existingNtf.OldPath = existingNtf.Path;
+							existingNtf.Path = ntf.Path;
+						}
+						existingNtf.Type = FileSystemActionType.Move;
+					}
+					else if (result.Item2 == AggregateType.NewFolder)
+					{
+						existingNtf.ChildrenCount++;
+						// TODO
+						// if delete ChildrenCount--;
+						// if change do nothing
+					}
+				}
+
+				this._rawNotifications.Dequeue();
+			}
+		}
+
+		private Tuple<WatchNotification, AggregateType> CheckIfCanAddToExisting(WatchNotification ntf)
+		{
+			if (this._notifications.Count == 0)
+				return null;
+			else
+			{
+				// TODO
+
+				// MOVE - the created/deleted item has the same name as previously deleted/created item 
+				// return new Tuple<WatchNotification, AggregateType>(ntfCreate/Delete, AggregateType.Move);
+
+				// NEW FOLDER - the item is located in a folder that has been created previously
+				// return new Tuple<WatchNotification, AggregateType>(ntfNewFolder, AggregateType.NewFolder);
+			}
+			return null;
+		}
+
+		private bool isFile(string path)
+		{
+			FileInfo fi = new FileInfo(path);
+			return fi.Exists;
 		}
 	}
 }
