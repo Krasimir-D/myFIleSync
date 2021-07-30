@@ -22,7 +22,7 @@ namespace MyFileSync
 			Move,
 			NewFolder
 		}
-		public struct WatchNotification
+		public class WatchNotification
 		{
 			public string Path;
 			public string OldPath;
@@ -59,7 +59,7 @@ namespace MyFileSync
 		#endregion
 
 		private Queue<WatchNotification> _rawNotifications;
-		private List<WatchNotification> _notifications;
+		private Dictionary<int, WatchNotification> _notifications;
 		private List<FileSystemWatcher> _systemWatchers;
 
 		public static List<char> DriveLetters
@@ -70,6 +70,7 @@ namespace MyFileSync
 				{
 					_driveLetters = new List<char>();
 					_driveLetters.Add('C');
+					_driveLetters.Add('D');
 				}
 				return _driveLetters;
 			}
@@ -114,7 +115,7 @@ namespace MyFileSync
 		private Watcher(List<char> driveLetters)
 		{
 			this._rawNotifications = new Queue<WatchNotification>();
-			this._notifications = new List<WatchNotification>();
+			this._notifications = new Dictionary<int, WatchNotification>();
 			this._systemWatchers = new List<FileSystemWatcher>();
 			foreach (char letter in driveLetters)
 			{
@@ -210,7 +211,7 @@ namespace MyFileSync
 
 		public void Raw2Aggregate()
 		{
-			while(this._rawNotifications.Count == 0)
+			while(this._rawNotifications.Count != 0)
 			{
 				var ntf = this._rawNotifications.Peek();
 
@@ -218,11 +219,14 @@ namespace MyFileSync
 
 				if (result == null)
 				{
-					this._notifications.Add(ntf);
+					int key = 0;
+					if (this._notifications.Count > 0)
+						key = this._notifications.Max(e => e.Key);
+					this._notifications.Add(key, ntf);
 				}
 				else //add to existing
 				{
-					var existingNtf = result.Item1;
+					var existingNtf = this._notifications[result.Item1];
 					if (result.Item2 == AggregateType.Move)
 					{
 						if (existingNtf.Type == FileSystemActionType.Create)
@@ -249,7 +253,7 @@ namespace MyFileSync
 			}
 		}
 
-		private Tuple<WatchNotification, AggregateType> CheckIfCanAddToExisting(WatchNotification ntf)
+		private Tuple<int, AggregateType> CheckIfCanAddToExisting(WatchNotification ntf)
 		{
 			if (this._notifications.Count == 0)
 				return null;
@@ -259,6 +263,23 @@ namespace MyFileSync
 
 				// MOVE - the created/deleted item has the same name as previously deleted/created item 
 				// return new Tuple<WatchNotification, AggregateType>(ntfCreate/Delete, AggregateType.Move);
+				int cnt=_notifications.Count;
+				int oldKey = _notifications.ElementAt(cnt - 1).Key;
+				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
+				string oldNtfName = oldNtf.Path;
+				string newNtfName = ntf.Path;
+                if (ntf.Type==FileSystemActionType.Create&&oldNtf.Type==FileSystemActionType.Delete|| ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)
+                {
+					if (CommonUtility.CompareDir(oldNtfName, newNtfName))
+					{
+						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
+						{
+							ntf.Type = FileSystemActionType.Move;
+							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Move);
+							return sysEvent;
+						}
+					}
+				}			
 
 				// NEW FOLDER - the item is located in a folder that has been created previously
 				// return new Tuple<WatchNotification, AggregateType>(ntfNewFolder, AggregateType.NewFolder);

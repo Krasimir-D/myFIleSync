@@ -25,7 +25,8 @@ namespace MyFileSync
 				if (_config == null)
 				{
 					_config = Read();
-					return DefaultConfig;
+					if (_config == null)
+						_config = DefaultConfig;
 				}
 				return _config;
 			}
