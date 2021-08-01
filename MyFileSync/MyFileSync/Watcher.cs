@@ -23,12 +23,28 @@ namespace MyFileSync
 			NewFolder
 		}
 		public class WatchNotification
-		{
+		{			
 			public string Path;
 			public string OldPath;
 			public DateTime Time;
 			public FileSystemActionType Type;
-			public int ChildrenCount;
+			public int ChildrenCount;			
+			public int _ChildrenCount
+			{
+				set 
+				{
+                    if (!CommonUtility.isFile(Path))
+                    {
+						DirectoryInfo di = new DirectoryInfo(Path);
+						object[] tmp= di.GetFiles();
+						this.ChildrenCount = tmp.Length;
+						tmp = di.GetDirectories();
+						this.ChildrenCount += tmp.Length;
+					}
+
+				}
+				get { return this.ChildrenCount; }
+			}
 
 			internal WatchNotification(string path, DateTime time, FileSystemActionType type)
 			{
@@ -161,7 +177,7 @@ namespace MyFileSync
 			if (actionType == WatchActionType.Ignore)
 				return;
 
-			if (e.ChangeType == WatcherChangeTypes.Changed && !this.isFile(e.FullPath))
+			if (e.ChangeType == WatcherChangeTypes.Changed && !CommonUtility.isFile(e.FullPath))
 				return;
 
 			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
@@ -222,7 +238,7 @@ namespace MyFileSync
 					int key = 0;
 					if (this._notifications.Count > 0)
 						key = this._notifications.Max(e => e.Key);
-					this._notifications.Add(key, ntf);
+					this._notifications.Add(++key, ntf);
 				}
 				else //add to existing
 				{
@@ -237,16 +253,17 @@ namespace MyFileSync
 						{
 							existingNtf.OldPath = existingNtf.Path;
 							existingNtf.Path = ntf.Path;
+                            if (!CommonUtility.isFile(existingNtf.Path))
+                            {
+								existingNtf.ChildrenCount--;
+                            }
 						}
 						existingNtf.Type = FileSystemActionType.Move;
 					}
 					else if (result.Item2 == AggregateType.NewFolder)
 					{
 						existingNtf.ChildrenCount++;
-						// TODO
-						// if delete ChildrenCount--;
-						// if change do nothing
-					}
+					}					
 				}
 
 				this._rawNotifications.Dequeue();
@@ -259,10 +276,7 @@ namespace MyFileSync
 				return null;
 			else
 			{
-				// TODO
-
-				// MOVE - the created/deleted item has the same name as previously deleted/created item 
-				// return new Tuple<WatchNotification, AggregateType>(ntfCreate/Delete, AggregateType.Move);
+				
 				int cnt=_notifications.Count;
 				int oldKey = _notifications.ElementAt(cnt - 1).Key;
 				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
@@ -279,18 +293,17 @@ namespace MyFileSync
 							return sysEvent;
 						}
 					}
-				}			
-
-				// NEW FOLDER - the item is located in a folder that has been created previously
-				// return new Tuple<WatchNotification, AggregateType>(ntfNewFolder, AggregateType.NewFolder);
+				}
+                
+                if (!CommonUtility.isFile(ntf.Path))
+                {
+					Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.NewFolder);
+					return sysEvent;
+                }
 			}
 			return null;
 		}
 
-		private bool isFile(string path)
-		{
-			FileInfo fi = new FileInfo(path);
-			return fi.Exists;
-		}
+		
 	}
 }
