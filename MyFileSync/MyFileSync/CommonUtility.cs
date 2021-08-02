@@ -48,5 +48,10 @@ namespace MyFileSync
             }
 			return false;
 		}
+		public static bool isFile(string path)
+		{
+			FileInfo fi = new FileInfo(path);
+			return fi.Exists;
+		}
 	}
 }
