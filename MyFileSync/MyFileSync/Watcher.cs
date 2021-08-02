@@ -154,6 +154,8 @@ namespace MyFileSync
 
 		private void Watcher_Event(object sender, FileSystemEventArgs e)
 		{
+			DateTime time = DateTime.Now;
+
 			List<PathValue?> paths = Paths[((FileSystemWatcher)sender).Path[0]];
 
 			WatchActionType actionType = FindActionType(paths, e.FullPath);
@@ -165,8 +167,6 @@ namespace MyFileSync
 				return;
 
 			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
-
-			DateTime time = DateTime.Now;
 
 			FileSystemActionType type = FileSystemActionType.Create;
 			if (e.ChangeType == WatcherChangeTypes.Created)
