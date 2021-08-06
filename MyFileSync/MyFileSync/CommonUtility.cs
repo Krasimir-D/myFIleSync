@@ -41,8 +41,8 @@ namespace MyFileSync
 		}
 		public static bool TimeComp(DateTime oldNtf,DateTime newNtf)
 		{
-			double diff = (newNtf.ToOADate()-oldNtf.ToOADate());			
-            if (diff<=0.08)
+			var result = oldNtf - newNtf;			
+            if (result.TotalMilliseconds<=80)
             {
 				return true;
             }

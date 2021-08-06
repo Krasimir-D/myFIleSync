@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
+using MyFileSync.Enumerators;
 
 namespace MyFileSync.Console
 {
@@ -15,7 +17,7 @@ namespace MyFileSync.Console
 		public Main()
 		{
 			InitializeComponent();
-		}
+		}		
 		private int _num = 0;
 		public void Notification(int x)
 		{
@@ -37,11 +39,22 @@ namespace MyFileSync.Console
 		}
 
 		private void Main_Load(object sender, EventArgs e)
+        {
+			LoadListViewConfig();
+        }
+
+		void LoadListViewConfig()
 		{
-			
+			listView_Paths.Items.Clear();
+			foreach (var item in ConfigManager.Config.Paths)
+			{
+				string[] values = { item.PathOnDisk, item.PathOnDrive, ((WatchActionType)item.Action).ToString() };
+				this.listView_Paths.Items.Add(new ListViewItem(values)).Tag = item;
+			}
+			this.listView_Paths.Refresh();
 		}
 
-        private void btnPush_Click(object sender, EventArgs e)        {
+		private void btnPush_Click(object sender, EventArgs e)        {
 
 			int x = int.Parse(txtNotif.Text);
 			Notification(x);
@@ -88,6 +101,26 @@ namespace MyFileSync.Console
 		private void button4_Click(object sender, EventArgs e)
 		{
 			MyFileSync.Watcher.Instance.Raw2Aggregate();
+		}        
+
+        private void bntChange_Click(object sender, EventArgs e)
+        {
+			ConfigForm f = new ConfigForm(listView_Paths.SelectedItems[0]);
+			var result = f.ShowDialog();
+			if (result == DialogResult.OK) {
+				ConfigManager.Save();
+				this.LoadListViewConfig();
+			}
+        }
+
+		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			btnChange.Enabled = listView_Paths.SelectedItems.Count > 0;
 		}
-	}
+
+        private void btnDelete_Click(object sender, EventArgs e)
+        {
+			listView_Paths.Items.Clear();
+		}
+    }
 }
