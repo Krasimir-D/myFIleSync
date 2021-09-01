@@ -27,23 +27,21 @@ namespace MyFileSync
 			public string Path;
 			public string OldPath;
 			public DateTime Time;
-			public FileSystemActionType Type;
-			public int ChildrenCount;			
-			public int _ChildrenCount
+			public FileSystemActionType Type;			
+			public int CountChildren()
 			{
-				set 
+				int childrenCount = 0;
+				if (!CommonUtility.isFile(Path))
 				{
-                    if (!CommonUtility.isFile(Path))
-                    {
-						DirectoryInfo di = new DirectoryInfo(Path);
-						object[] tmp= di.GetFiles();
-						this.ChildrenCount = tmp.Length;
-						tmp = di.GetDirectories();
-						this.ChildrenCount += tmp.Length;
-					}
-
+					
+					DirectoryInfo di = new DirectoryInfo(Path);
+					object[] tmp = di.GetFiles();
+					childrenCount = tmp.Length;
+					tmp = di.GetDirectories();
+					childrenCount += tmp.Length;
+					return childrenCount;
 				}
-				get { return this.ChildrenCount; }
+				return childrenCount;
 			}
 
 			internal WatchNotification(string path, DateTime time, FileSystemActionType type)
@@ -51,8 +49,7 @@ namespace MyFileSync
 				this.Path = path;
 				this.OldPath = "";
 				this.Time = time;
-				this.Type = type;
-				this.ChildrenCount = 0;
+				this.Type = type;				
 			}
 		}
 
@@ -252,18 +249,14 @@ namespace MyFileSync
 						else if (existingNtf.Type == FileSystemActionType.Delete)
 						{
 							existingNtf.OldPath = existingNtf.Path;
-							existingNtf.Path = ntf.Path;
-                            if (!CommonUtility.isFile(existingNtf.Path))
-                            {
-								existingNtf.ChildrenCount--;
-                            }
+							existingNtf.Path = ntf.Path;                            
 						}
 						existingNtf.Type = FileSystemActionType.Move;
 					}
-					else if (result.Item2 == AggregateType.NewFolder)
-					{
-						existingNtf.ChildrenCount++;
-					}					
+                    if (result.Item2==AggregateType.NewFolder)
+                    {
+
+                    }
 				}
 
 				this._rawNotifications.Dequeue();
@@ -293,13 +286,21 @@ namespace MyFileSync
 							return sysEvent;
 						}
 					}
-				}
-                
+				}                
                 if (!CommonUtility.isFile(ntf.Path))
                 {
-					Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.NewFolder);
-					return sysEvent;
+									
                 }
+				string parentDir = Path.GetDirectoryName(ntf.Path);
+				foreach (var exstNtf in _notifications)
+				{
+					if (exstNtf.Value.Path.StartsWith(parentDir) && exstNtf.Value.Type == FileSystemActionType.Create)
+					{
+						Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(exstNtf.Key, AggregateType.NewFolder);
+						return sysEvent;
+					}
+				}
+
 			}
 			return null;
 		}

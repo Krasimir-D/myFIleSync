@@ -10,7 +10,7 @@ namespace MyFileSync
 		private static Configuration _defaultConfig;
 		private static Configuration _config;
 
-		private static string ConfigFilePath
+		public static string ConfigFilePath
 		{
 			get
 			{
@@ -72,10 +72,16 @@ namespace MyFileSync
 		{
 			if (config == null)
 				config = DefaultConfig;
+			_config = config;
 			config.WriteXml(ConfigFilePath);
 		}
 
-		private static Configuration Read()
+		public static void Save()
+		{
+			Config.WriteXml(ConfigFilePath);
+		}
+
+		public static Configuration Read()
 		{
 			FileInfo fi = new FileInfo(ConfigFilePath);
 			if (fi.Exists)

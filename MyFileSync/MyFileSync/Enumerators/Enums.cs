@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MyFileSync.Enumerators
 {
-	enum SyncFrequencyType
+	public enum SyncFrequencyType
 	{
 		Manual = 1,
 		Continous = 2,
@@ -15,7 +15,7 @@ namespace MyFileSync.Enumerators
 		Monthly = 5,
 	}
 
-	enum WatchActionType
+	public enum WatchActionType
 	{
 		Watch = 1,
 		Ignore = 2,
