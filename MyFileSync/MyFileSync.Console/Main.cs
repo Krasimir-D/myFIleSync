@@ -14,6 +14,8 @@ namespace MyFileSync.Console
 {
 	public partial class Main : Form
 	{
+		
+
 		public Main()
 		{
 			InitializeComponent();
@@ -112,15 +114,33 @@ namespace MyFileSync.Console
 				this.LoadListViewConfig();
 			}
         }
-
 		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			btnChange.Enabled = listView_Paths.SelectedItems.Count > 0;
+		}		
+		
+		private void btnDelete_Click(object sender, EventArgs e)
+        {
+			Config.Configuration.PathsRow deletedPathRow;
+			deletedPathRow = (Config.Configuration.PathsRow)listView_Paths.SelectedItems[0].Tag;
+            int tmpCnt = ConfigManager.Config.Paths.Count;
+            ConfigManager.Config.Paths.RemovePathsRow(deletedPathRow);
+			ConfigManager.Save();
+			LoadListViewConfig();
 		}
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private void btnAdd_Click(object sender, EventArgs e)
         {
-			listView_Paths.Items.Clear();
+			FolderBrowserDialog choosePath = new FolderBrowserDialog();
+			choosePath.ShowDialog();
+			var newPath = choosePath.SelectedPath;
+			ConfigForm f = new ConfigForm(newPath);
+			var result = f.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				ConfigManager.Save();
+				this.LoadListViewConfig();
+			}
 		}
     }
 }

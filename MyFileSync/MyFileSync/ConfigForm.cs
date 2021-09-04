@@ -18,25 +18,35 @@ namespace MyFileSync
         public ConfigForm()
         {
             InitializeComponent();
-            
-        }
-        public ConfigForm(ListViewItem item):this()
-        {
 
             comboBox_Action.Items.Add(WatchActionType.Ignore);
             comboBox_Action.Items.Add(WatchActionType.Sync);
             comboBox_Action.Items.Add(WatchActionType.Watch);
-
+        }
+        public ConfigForm(ListViewItem item):this()
+        {
             this.PathRow = (Config.Configuration.PathsRow)item.Tag;
             txtPath.Text = this.PathRow.PathOnDisk;
             comboBox_Action.SelectedItem = (WatchActionType)this.PathRow.Action;
         }
+        public ConfigForm(string path):this()
+        {
+            txtPath.Text = path;
+            comboBox_Action.SelectedItem = WatchActionType.Ignore;
+        }
 
         private void btnOK_Click(object sender, EventArgs e)
         {
-            this.PathRow.PathOnDisk = txtPath.Text;
-            this.PathRow.Action = (short)((WatchActionType)comboBox_Action.SelectedItem);
-
+            if (PathRow!=null)
+            {
+                this.PathRow.PathOnDrive = txtPath.Text;
+                this.PathRow.Action = (short)((WatchActionType)comboBox_Action.SelectedItem);
+            }
+            else
+            {
+                var newRow = ConfigManager.Config.Paths.NewPathsRow();
+                ConfigManager.Config.Paths.AddPathsRow(txtPath.Text, "", 2, null);
+            }
             this.DialogResult = DialogResult.OK;
             this.Dispose();
         }
