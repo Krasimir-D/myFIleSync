@@ -7,7 +7,10 @@ namespace MyFileSync
 	{
 		public static string NormalizePath(string path)
 		{
-			return Path.GetFullPath(new Uri(path).LocalPath)
+			if (path == null)
+				return null;
+			else
+				return Path.GetFullPath(new Uri(path).LocalPath)
 					   .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
 					   .ToUpperInvariant();
 		}
@@ -41,12 +44,8 @@ namespace MyFileSync
 		}
 		public static bool TimeComp(DateTime oldNtf,DateTime newNtf)
 		{
-			var result = oldNtf - newNtf;			
-            if (result.TotalMilliseconds<=80)
-            {
-				return true;
-            }
-			return false;
+			TimeSpan diff = oldNtf - newNtf;
+			return (diff.TotalMilliseconds <= 80);
 		}
 		public static bool isFile(string path)
 		{

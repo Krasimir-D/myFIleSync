@@ -43,6 +43,7 @@ namespace MyFileSync
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData));
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData).Replace("Local", "LocalLow"));
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
 					AddIgnorePath(_defaultConfig, Environment.GetFolderPath(Environment.SpecialFolder.Windows));
