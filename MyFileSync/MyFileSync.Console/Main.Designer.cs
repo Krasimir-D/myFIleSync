@@ -44,6 +44,7 @@ namespace MyFileSync.Console
             this.PathOnDisk = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.PathOnDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Action = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btnAdd = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -134,7 +135,7 @@ namespace MyFileSync.Console
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(100, 28);
             this.btnDelete.TabIndex = 9;
-            this.btnDelete.Text = "btnDelete";
+            this.btnDelete.Text = "Delete";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
             // 
@@ -168,11 +169,23 @@ namespace MyFileSync.Console
             this.Action.Text = "Action";
             this.Action.Width = 259;
             // 
+            // btnAdd
+            // 
+            this.btnAdd.Location = new System.Drawing.Point(727, 491);
+            this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
+            this.btnAdd.Name = "btnAdd";
+            this.btnAdd.Size = new System.Drawing.Size(100, 28);
+            this.btnAdd.TabIndex = 11;
+            this.btnAdd.Text = "Add";
+            this.btnAdd.UseVisualStyleBackColor = true;
+            this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1106, 598);
+            this.Controls.Add(this.btnAdd);
             this.Controls.Add(this.listView_Paths);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnChange);
@@ -208,6 +221,7 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader PathOnDisk;
         private System.Windows.Forms.ColumnHeader PathOnDrive;
         private System.Windows.Forms.ColumnHeader Action;
+        private System.Windows.Forms.Button btnAdd;
     }
 }
 
