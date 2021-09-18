@@ -45,6 +45,16 @@ namespace MyFileSync.Console
             this.PathOnDrive = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Action = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btnAdd = new System.Windows.Forms.Button();
+            this.tabNotifications = new System.Windows.Forms.TabControl();
+            this.tabDir = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.listView_Notifications = new System.Windows.Forms.ListView();
+            this.columnTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnActionType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabNotifications.SuspendLayout();
+            this.tabDir.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // notifyIcon1
@@ -81,7 +91,7 @@ namespace MyFileSync.Console
             this.btnStart.TabIndex = 4;
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.button1_Click);
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // btnDialog
             // 
@@ -90,7 +100,7 @@ namespace MyFileSync.Console
             this.btnDialog.Name = "btnDialog";
             this.btnDialog.Size = new System.Drawing.Size(100, 28);
             this.btnDialog.TabIndex = 4;
-            this.btnDialog.Text = "Debug";
+            this.btnDialog.Text = "Stop";
             this.btnDialog.UseVisualStyleBackColor = true;
             this.btnDialog.Click += new System.EventHandler(this.button2_Click);
             // 
@@ -107,19 +117,19 @@ namespace MyFileSync.Console
             // 
             // btnAggregate
             // 
-            this.btnAggregate.Location = new System.Drawing.Point(744, 61);
+            this.btnAggregate.Location = new System.Drawing.Point(815, 61);
             this.btnAggregate.Margin = new System.Windows.Forms.Padding(4);
             this.btnAggregate.Name = "btnAggregate";
-            this.btnAggregate.Size = new System.Drawing.Size(100, 28);
+            this.btnAggregate.Size = new System.Drawing.Size(154, 28);
             this.btnAggregate.TabIndex = 6;
-            this.btnAggregate.Text = "Aggregate";
+            this.btnAggregate.Text = "Refresh notifications";
             this.btnAggregate.UseVisualStyleBackColor = true;
             this.btnAggregate.Click += new System.EventHandler(this.button4_Click);
             // 
             // btnChange
             // 
             this.btnChange.Enabled = false;
-            this.btnChange.Location = new System.Drawing.Point(589, 491);
+            this.btnChange.Location = new System.Drawing.Point(678, 491);
             this.btnChange.Margin = new System.Windows.Forms.Padding(4);
             this.btnChange.Name = "btnChange";
             this.btnChange.Size = new System.Drawing.Size(100, 28);
@@ -130,7 +140,7 @@ namespace MyFileSync.Console
             // 
             // btnDelete
             // 
-            this.btnDelete.Location = new System.Drawing.Point(869, 491);
+            this.btnDelete.Location = new System.Drawing.Point(956, 491);
             this.btnDelete.Margin = new System.Windows.Forms.Padding(4);
             this.btnDelete.Name = "btnDelete";
             this.btnDelete.Size = new System.Drawing.Size(100, 28);
@@ -146,9 +156,9 @@ namespace MyFileSync.Console
             this.PathOnDrive,
             this.Action});
             this.listView_Paths.HideSelection = false;
-            this.listView_Paths.Location = new System.Drawing.Point(589, 138);
+            this.listView_Paths.Location = new System.Drawing.Point(0, 0);
             this.listView_Paths.Name = "listView_Paths";
-            this.listView_Paths.Size = new System.Drawing.Size(380, 315);
+            this.listView_Paths.Size = new System.Drawing.Size(477, 315);
             this.listView_Paths.TabIndex = 10;
             this.listView_Paths.UseCompatibleStateImageBehavior = false;
             this.listView_Paths.View = System.Windows.Forms.View.Details;
@@ -171,7 +181,7 @@ namespace MyFileSync.Console
             // 
             // btnAdd
             // 
-            this.btnAdd.Location = new System.Drawing.Point(727, 491);
+            this.btnAdd.Location = new System.Drawing.Point(815, 491);
             this.btnAdd.Margin = new System.Windows.Forms.Padding(4);
             this.btnAdd.Name = "btnAdd";
             this.btnAdd.Size = new System.Drawing.Size(100, 28);
@@ -180,13 +190,76 @@ namespace MyFileSync.Console
             this.btnAdd.UseVisualStyleBackColor = true;
             this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
             // 
+            // tabNotifications
+            // 
+            this.tabNotifications.Controls.Add(this.tabDir);
+            this.tabNotifications.Controls.Add(this.tabPage2);
+            this.tabNotifications.Location = new System.Drawing.Point(589, 130);
+            this.tabNotifications.Name = "tabNotifications";
+            this.tabNotifications.SelectedIndex = 0;
+            this.tabNotifications.Size = new System.Drawing.Size(491, 354);
+            this.tabNotifications.TabIndex = 12;
+            // 
+            // tabDir
+            // 
+            this.tabDir.Controls.Add(this.listView_Paths);
+            this.tabDir.Location = new System.Drawing.Point(4, 25);
+            this.tabDir.Name = "tabDir";
+            this.tabDir.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDir.Size = new System.Drawing.Size(483, 325);
+            this.tabDir.TabIndex = 0;
+            this.tabDir.Text = "Directories";
+            this.tabDir.UseVisualStyleBackColor = true;
+            this.tabDir.Click += new System.EventHandler(this.tabDir_Click);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.listView_Notifications);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(483, 325);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Notifications";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPage2.Click += new System.EventHandler(this.tabPage2_Click);
+            // 
+            // listView_Notifications
+            // 
+            this.listView_Notifications.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnTime,
+            this.columnFile,
+            this.columnActionType});
+            this.listView_Notifications.HideSelection = false;
+            this.listView_Notifications.Location = new System.Drawing.Point(1, 3);
+            this.listView_Notifications.Name = "listView_Notifications";
+            this.listView_Notifications.Size = new System.Drawing.Size(479, 302);
+            this.listView_Notifications.TabIndex = 0;
+            this.listView_Notifications.UseCompatibleStateImageBehavior = false;
+            this.listView_Notifications.View = System.Windows.Forms.View.Details;
+            // 
+            // columnTime
+            // 
+            this.columnTime.Text = "Time";
+            this.columnTime.Width = 72;
+            // 
+            // columnFile
+            // 
+            this.columnFile.Text = "File";
+            this.columnFile.Width = 192;
+            // 
+            // columnActionType
+            // 
+            this.columnActionType.Text = "Action";
+            this.columnActionType.Width = 76;
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1106, 598);
+            this.Controls.Add(this.tabNotifications);
             this.Controls.Add(this.btnAdd);
-            this.Controls.Add(this.listView_Paths);
             this.Controls.Add(this.btnDelete);
             this.Controls.Add(this.btnChange);
             this.Controls.Add(this.btnAggregate);
@@ -201,6 +274,9 @@ namespace MyFileSync.Console
             this.Text = "Main";
             this.Load += new System.EventHandler(this.Main_Load);
             this.SizeChanged += new System.EventHandler(this.Main_SizeChanged);
+            this.tabNotifications.ResumeLayout(false);
+            this.tabDir.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -222,6 +298,13 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader PathOnDrive;
         private System.Windows.Forms.ColumnHeader Action;
         private System.Windows.Forms.Button btnAdd;
+        private System.Windows.Forms.TabControl tabNotifications;
+        private System.Windows.Forms.TabPage tabDir;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.ListView listView_Notifications;
+        private System.Windows.Forms.ColumnHeader columnTime;
+        private System.Windows.Forms.ColumnHeader columnFile;
+        private System.Windows.Forms.ColumnHeader columnActionType;
     }
 }
 

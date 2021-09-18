@@ -75,7 +75,7 @@ namespace MyFileSync
 		private Queue<WatchNotification> _rawNotifications;
 		private Dictionary<int, WatchNotification> _notifications;
 		private List<FileSystemWatcher> _systemWatchers;
-
+		
 		public static List<char> DriveLetters
 		{
 			get
@@ -84,8 +84,8 @@ namespace MyFileSync
 				{
 					_driveLetters = new List<char>();
 					_driveLetters.Add('C');
-					//_driveLetters.Add('D');
-				}
+                    _driveLetters.Add('D');
+                }
 				return _driveLetters;
 			}
 			set
@@ -112,6 +112,10 @@ namespace MyFileSync
 				}
 				return _paths;
 			}
+		}
+		public void CleanConfig()
+		{
+			_paths = null;
 		}
 
 		public static Watcher Instance
@@ -142,6 +146,10 @@ namespace MyFileSync
 				_systemWatchers.Add(watcher);
 			}
 		}
+		public Watcher()
+		{ 
+			
+		}
 
 		public void Start()
 		{
@@ -151,6 +159,16 @@ namespace MyFileSync
 				watcher.Created += new FileSystemEventHandler(Watcher_Event);
 				watcher.Deleted += new FileSystemEventHandler(Watcher_Event);
 				watcher.Renamed += new RenamedEventHandler(Watcher_Renamed);
+			}
+		}
+		public void Stop()
+		{
+			foreach (var watcher in this._systemWatchers)
+			{
+				watcher.Changed -= new FileSystemEventHandler(Watcher_Event);
+				watcher.Created -= new FileSystemEventHandler(Watcher_Event);
+				watcher.Deleted -= new FileSystemEventHandler(Watcher_Event);
+				watcher.Renamed -= new RenamedEventHandler(Watcher_Renamed);
 			}
 		}
 
@@ -189,6 +207,8 @@ namespace MyFileSync
 				type = FileSystemActionType.Delete;
 			else if (e.ChangeType == WatcherChangeTypes.Changed)
 				type = FileSystemActionType.FileChange;
+			else if (e.ChangeType == WatcherChangeTypes.Renamed)
+				type = FileSystemActionType.Rename;
 
 			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
 			this._rawNotifications.Enqueue(ntf);
@@ -216,10 +236,17 @@ namespace MyFileSync
 
 		private void Watcher_Renamed(object sender, RenamedEventArgs e)
 		{
-			if (!e.FullPath.StartsWith(@"C:\ZZZ"))
-				return;
+			DateTime time = DateTime.Now;
+			FileSystemActionType type = FileSystemActionType.Rename;
+			List<PathValue?> paths = Paths[((FileSystemWatcher)sender).Path[0]];
 
-			//TODO
+			WatchActionType actionType = FindActionType(paths, e.FullPath);
+
+			if (actionType == WatchActionType.Ignore)
+				return;
+			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
+			this._rawNotifications.Enqueue(ntf);
+			
 			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
 		}
 
@@ -258,10 +285,70 @@ namespace MyFileSync
 					{
 						
 					}
+                    else if (result.Item2==AggregateType.Rename)
+                    {
+						existingNtf.Path = ntf.Path;
+                    }
 				}
 
 				this._rawNotifications.Dequeue();
 			}
+		}
+		public List<Tuple<string, string, DateTime>> preparedNotifications = new List<Tuple<string, string, DateTime>>();
+		public List<Tuple<string, string, DateTime>> VizuallizeNotifications()
+		{
+			string type = "";
+			string path = "";
+			DateTime time;
+			WatchNotification tmpNot;
+            for(int cnt=0;cnt<_notifications.Count(); cnt++)
+            {
+				var item = _notifications.ElementAt(cnt);
+				 tmpNot = item.Value;
+                if (tmpNot.Type==FileSystemActionType.Create)
+                {
+					type = "Created";
+					path = tmpNot.Path;
+					time = tmpNot.Time;
+					Tuple <string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type,path,time);
+					preparedNotifications.Add(ntf);
+                }
+                else if (tmpNot.Type==FileSystemActionType.Delete)
+                {
+					type = "Deleted";
+					path = tmpNot.Path;
+					time = tmpNot.Time;
+					Tuple<string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type, path, time);
+					preparedNotifications.Add(ntf);
+				}
+				else if (tmpNot.Type == FileSystemActionType.FileChange)
+				{
+					type = "Changed";
+					path = tmpNot.Path;
+					time = tmpNot.Time;
+					Tuple<string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type, path, time);
+					preparedNotifications.Add(ntf);
+				}
+				else if (tmpNot.Type == FileSystemActionType.Move)
+				{
+					type = "Moved";
+					path = tmpNot.Path;
+					time = tmpNot.Time;
+					Tuple<string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type, path, time);
+					preparedNotifications.Add(ntf);
+				}
+				else if (tmpNot.Type == FileSystemActionType.Rename)
+				{
+					type = "Renamed";
+					path = string.Format(" File renamed to {1}", tmpNot.Path);
+					time = tmpNot.Time;
+					Tuple<string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type, path, time);
+					preparedNotifications.Add(ntf);
+				}
+
+				//_notifications.Remove(item.Key); За Маркиране 
+			}
+			return preparedNotifications;
 		}
 
 		private Tuple<int, AggregateType> CheckIfCanAddToExisting(WatchNotification ntf)
@@ -274,7 +361,7 @@ namespace MyFileSync
 				int cnt=_notifications.Count;
 				int oldKey = _notifications.ElementAt(cnt - 1).Key;
 				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
-				string oldNtfName = oldNtf.Path;
+                string oldNtfName = oldNtf.Path;
 				string newNtfName = ntf.Path;
                 if (ntf.Type==FileSystemActionType.Create&&oldNtf.Type==FileSystemActionType.Delete|| ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)
                 {

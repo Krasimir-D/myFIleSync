@@ -9,16 +9,16 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using MyFileSync.Enumerators;
+using System.Threading;
+using System.Timers;
 
 namespace MyFileSync.Console
 {
 	public partial class Main : Form
 	{
-		
-
 		public Main()
 		{
-			InitializeComponent();
+			InitializeComponent();			
 		}		
 		private int _num = 0;
 		public void Notification(int x)
@@ -43,9 +43,11 @@ namespace MyFileSync.Console
 		private void Main_Load(object sender, EventArgs e)
         {
 			LoadListViewConfig();
-        }
+			Watcher.Instance.Raw2Aggregate();
+			LoadListViewNotif();			
+		}
 
-		void LoadListViewConfig()
+		private void LoadListViewConfig()
 		{
 			listView_Paths.Items.Clear();
 			foreach (var item in ConfigManager.Config.Paths)
@@ -55,6 +57,20 @@ namespace MyFileSync.Console
 			}
 			this.listView_Paths.Refresh();
 		}
+		private void LoadListViewNotif()
+		{
+			
+			List<Tuple<string, string, DateTime>> notifications = new List<Tuple<string, string, DateTime>>();
+			notifications = Watcher.Instance.VizuallizeNotifications();
+			this.listView_Notifications.Items.Clear();
+
+			foreach (var item in notifications)
+            {
+				string[] values = { item.Item3.ToString(),item.Item2,item.Item1 };
+				this.listView_Notifications.Items.Add(new ListViewItem(values));
+            }
+			notifications.Clear();
+		}	
 
 		private void btnPush_Click(object sender, EventArgs e)        {
 
@@ -85,38 +101,74 @@ namespace MyFileSync.Console
 			}
 		}
 
-		private void button1_Click(object sender, EventArgs e)
+
+		private Thread watcherThread;
+		
+		private void btnStart_Click(object sender, EventArgs e)
 		{
-			MyFileSync.Watcher.Instance.Start();
+			Watcher.Instance.Start();			
+			SetTimer();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			MyFileSync.Watcher.Instance.Debug();
+			watcherThread.Abort();
+			//MyFileSync.Watcher.Instance.Stop();
 		}
 
 		private void button3_Click(object sender, EventArgs e)
 		{
 			ConfigManager.Save(null);
 		}
-
-		private void button4_Click(object sender, EventArgs e)
+		private static System.Timers.Timer checkUpTimer;
+		private void SetTimer()
 		{
+			double interval = 10000;
+			checkUpTimer = new System.Timers.Timer(interval);
+			checkUpTimer.Elapsed += this.TimedAggregate;
+			checkUpTimer.AutoReset = true;
+			checkUpTimer.Enabled = true;
+		}
+	
+		private void TimedAggregate(Object source, ElapsedEventArgs e)
+		{
+			if (this.InvokeRequired)
+			{
+				MyFileSync.Watcher.Instance.Raw2Aggregate();
+
+				// Call this same method but append THREAD2 to the text
+				Action safeWrite = delegate { LoadListViewNotif(); };
+				this.Invoke(safeWrite);
+			}
+			else
+				this.LoadListViewNotif();			
+		}
+		private void button4_Click(object sender, EventArgs e)
+		{			
 			MyFileSync.Watcher.Instance.Raw2Aggregate();
-		}        
+			LoadListViewNotif();
+		}		
 
         private void bntChange_Click(object sender, EventArgs e)
         {
 			ConfigForm f = new ConfigForm(listView_Paths.SelectedItems[0]);
 			var result = f.ShowDialog();
-			if (result == DialogResult.OK) {
-				ConfigManager.Save();
-				this.LoadListViewConfig();
-			}
+			if (result == DialogResult.OK)
+            {
+                ChangeConfig();
+            }
         }
-		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+
+        private void ChangeConfig()
+        {
+            ConfigManager.Save();
+			Watcher.Instance.CleanConfig();
+            this.LoadListViewConfig();
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			btnChange.Enabled = listView_Paths.SelectedItems.Count > 0;
+			btnChange.Enabled = listView_Paths.SelectedItems.Count > 0;			
 		}		
 		
 		private void btnDelete_Click(object sender, EventArgs e)
@@ -125,8 +177,7 @@ namespace MyFileSync.Console
 			deletedPathRow = (Config.Configuration.PathsRow)listView_Paths.SelectedItems[0].Tag;
             int tmpCnt = ConfigManager.Config.Paths.Count;
             ConfigManager.Config.Paths.RemovePathsRow(deletedPathRow);
-			ConfigManager.Save();
-			LoadListViewConfig();
+			ChangeConfig();
 		}
 
         private void btnAdd_Click(object sender, EventArgs e)
@@ -138,9 +189,18 @@ namespace MyFileSync.Console
 			var result = f.ShowDialog();
 			if (result == DialogResult.OK)
 			{
-				ConfigManager.Save();
-				this.LoadListViewConfig();
+				ChangeConfig();
 			}
 		}
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tabDir_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
