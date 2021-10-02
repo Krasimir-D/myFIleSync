@@ -100,20 +100,18 @@ namespace MyFileSync.Console
 				notifyIcon1.Visible = true;
 			}
 		}
-
-
-		private Thread watcherThread;
 		
 		private void btnStart_Click(object sender, EventArgs e)
 		{
-			Watcher.Instance.Start();			
-			SetTimer();
+			Watcher.Instance.Start();
+			btnAggregate.Enabled = true;
+		//	SetTimer();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
 		{
-			watcherThread.Abort();
-			//MyFileSync.Watcher.Instance.Stop();
+			btnStop.Enabled = true;
+			MyFileSync.Watcher.Instance.Stop();
 		}
 
 		private void button3_Click(object sender, EventArgs e)
@@ -147,7 +145,7 @@ namespace MyFileSync.Console
 		{			
 			MyFileSync.Watcher.Instance.Raw2Aggregate();
 			LoadListViewNotif();
-		}		
+		  }		
 
         private void bntChange_Click(object sender, EventArgs e)
         {
@@ -162,6 +160,7 @@ namespace MyFileSync.Console
         private void ChangeConfig()
         {
             ConfigManager.Save();
+			ConfigManager.Read();
 			Watcher.Instance.CleanConfig();
             this.LoadListViewConfig();
         }

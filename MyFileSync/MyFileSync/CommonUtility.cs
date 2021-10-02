@@ -19,7 +19,7 @@ namespace MyFileSync
 		{
 			return (NormalizePath(path1) == NormalizePath(path2));
 		}
-		public static bool CompareDir(string path1, string path2 )
+		public static bool CompareName(string path1, string path2 ) // compares whether the file's/folder's name is still the same in case of it being moved 
 		{
 			string[] pth1 = PathToArr(path1);
 			int cnt1 = pth1.Length;
@@ -31,7 +31,29 @@ namespace MyFileSync
             }
 			return false;
 		}
-		
+		public static bool isDirIdentical(string path1, string path2) // checks whether the path is the same except for the name in case of it being renamed event
+		{
+			bool answer = false;
+			int m = 0, n = 0;
+			string[] pth1 = PathToArr(path1);
+			int cnt1 = pth1.Length;
+			string[] pth2 = PathToArr(path2);
+			int cnt2 = pth2.Length;
+            while (m<cnt1-2&&n<cnt2-2)
+            {
+                if (pth1[m++]!=pth2[n++])
+                {
+					return answer;
+                }				
+            }
+            if (m>cnt1-2||n>cnt2-2)
+            {
+				return answer;
+            }
+			answer = true;
+			return answer;
+		}
+
 		public static string[] PathToArr(string path)
 		{
 			string[] separator = { @"\" };
@@ -44,8 +66,8 @@ namespace MyFileSync
 		}
 		public static bool TimeComp(DateTime oldNtf,DateTime newNtf)
 		{
-			TimeSpan diff = oldNtf - newNtf;
-			return (diff.TotalMilliseconds <= 80);
+			TimeSpan diff = newNtf - oldNtf;
+			return (diff.TotalMilliseconds <= 10000);
 		}
 		public static bool isFile(string path)
 		{

@@ -15,7 +15,8 @@ namespace MyFileSync
 			Delete,
 			Rename,
 			Move,
-			FileChange
+			FileChange,
+			NoAction	
 		}
 		public enum AggregateType
 		{
@@ -23,6 +24,8 @@ namespace MyFileSync
 			NewFolder, //all subitems of a newly created folder
 			Rename, //rename a previously logged item or any of its subitem
 			Delete, //delete a previously logged item or any of its subitem
+			NoAction,// create + delete combo of an item with identical locations 
+			Create,
 		}
 		public class WatchNotification
 		{			
@@ -270,24 +273,38 @@ namespace MyFileSync
 					var existingNtf = this._notifications[result.Item1];
 					if (result.Item2 == AggregateType.Move)
 					{
-						if (existingNtf.Type == FileSystemActionType.Create)
-						{
-							existingNtf.OldPath = ntf.Path;
-						}
-						else if (existingNtf.Type == FileSystemActionType.Delete)
-						{
-							existingNtf.OldPath = existingNtf.Path;
-							existingNtf.Path = ntf.Path;
-						}
-						existingNtf.Type = FileSystemActionType.Move;
-					}
-					else if (result.Item2 == AggregateType.NewFolder)
+                        if (existingNtf.Type == FileSystemActionType.Create)
+                        {
+                            existingNtf.OldPath = ntf.Path;
+                        }
+                        else if (existingNtf.Type == FileSystemActionType.Delete)
+                        {
+                            existingNtf.OldPath = existingNtf.Path;
+                            existingNtf.Path = ntf.Path;
+                        }
+                        existingNtf.Type = FileSystemActionType.Move;
+                    }
+                    else if (result.Item2 == AggregateType.NewFolder)
+                    {
+
+                    }
+                    else if (result.Item2 == AggregateType.Delete)
 					{
-						
+						existingNtf.Path = ntf.Path;
+						existingNtf.Type = FileSystemActionType.Delete;
+						ntf.Type = FileSystemActionType.Delete;
+						Console.Out.WriteLine("*+ delete achieved");											
 					}
-                    else if (result.Item2==AggregateType.Rename)
+                    else if (result.Item2==AggregateType.Create)
+                    {
+						existingNtf.OldPath = existingNtf.Path;
+						existingNtf.Path = ntf.Path;
+						existingNtf.Type = FileSystemActionType.Create;
+                    }
+                    else if (result.Item2==AggregateType.NoAction)
                     {
 						existingNtf.Path = ntf.Path;
+						existingNtf.Type = ntf.Type;
                     }
 				}
 
@@ -340,10 +357,14 @@ namespace MyFileSync
 				else if (tmpNot.Type == FileSystemActionType.Rename)
 				{
 					type = "Renamed";
-					path = string.Format(" File renamed to {1}", tmpNot.Path);
+					path = string.Format(" File renamed to {0}", tmpNot.Path);
 					time = tmpNot.Time;
 					Tuple<string, string, DateTime> ntf = new Tuple<string, string, DateTime>(type, path, time);
 					preparedNotifications.Add(ntf);
+				}
+				else if (tmpNot.Type == FileSystemActionType.NoAction)
+				{
+					_notifications.Remove(item.Key);
 				}
 
 				//_notifications.Remove(item.Key); За Маркиране 
@@ -361,11 +382,9 @@ namespace MyFileSync
 				int cnt=_notifications.Count;
 				int oldKey = _notifications.ElementAt(cnt - 1).Key;
 				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
-                string oldNtfName = oldNtf.Path;
-				string newNtfName = ntf.Path;
-                if (ntf.Type==FileSystemActionType.Create&&oldNtf.Type==FileSystemActionType.Delete|| ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)
-                {
-					if (CommonUtility.CompareDir(oldNtfName, newNtfName))
+				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)// Try- catch moved event
+				{
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path)&&!CommonUtility.isDirIdentical(ntf.Path,oldNtf.Path))
 					{
 						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
 						{
@@ -375,7 +394,62 @@ namespace MyFileSync
 						}
 					}
 				}
-
+				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)// catch cr+ dl sequence
+				{
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path) && CommonUtility.isDirIdentical(ntf.Path, oldNtf.Path))
+					{
+						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
+						{							
+							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.NoAction);
+							return sysEvent;
+						}
+					}
+				}
+				else if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.FileChange)
+				{
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
+					{
+						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
+						{
+							ntf.Type = FileSystemActionType.Delete;
+							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Delete);
+							return sysEvent;
+						}
+					}
+				}
+				else if (ntf.Type == FileSystemActionType.Rename && oldNtf.Type == FileSystemActionType.Create)
+				{
+					if (CommonUtility.isDirIdentical(ntf.Path, oldNtf.Path))
+					{
+						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
+						{
+							ntf.Type = FileSystemActionType.Create;
+							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
+							return sysEvent;
+						}
+					}
+				}
+				else if (ntf.Type == FileSystemActionType.FileChange && oldNtf.Type == FileSystemActionType.Create)
+				{
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
+					{
+						ntf.Type = FileSystemActionType.Create;
+						Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
+						return sysEvent;
+					}
+				}
+				else if (ntf.Type == FileSystemActionType.Move && oldNtf.Type == FileSystemActionType.Create)
+				{ 
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
+					{
+						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
+						{
+							//ntf.Type = FileSystemActionType.Create;
+							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
+							return sysEvent;
+						}
+					}						
+				}
 				string parentDir = Path.GetDirectoryName(ntf.Path);
 				foreach (var exixstingNtf in _notifications)
 				{
