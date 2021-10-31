@@ -12,3 +12,6 @@
 /MyFileSync/MyFileSync/bin/Debug
 /MyFileSync/MyFileSync/obj/Release
 /MyFileSync/MyFileSync.Console/obj/Release
+/MyFileSync/UnitTest/bin/Debug
+/MyFileSync/UnitTest/obj/Debug
+/MyFileSync/.vs/MyFileSync/v16/TestStore/0

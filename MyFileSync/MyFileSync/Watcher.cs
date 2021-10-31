@@ -48,7 +48,7 @@ namespace MyFileSync
 				return count;
 			}
 
-			internal WatchNotification(string path, DateTime time, FileSystemActionType type)
+			public WatchNotification(string path, DateTime time, FileSystemActionType type)
 			{
 				this.Path = path;
 				this.OldPath = "";
@@ -217,7 +217,6 @@ namespace MyFileSync
 			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
 			this._rawNotifications.Enqueue(ntf);
 			int i = 0;
-			_testNotifications.Add(i++,ntf);
 		}
 
 		private static WatchActionType FindActionType(List<PathValue?> paths, string path)
@@ -466,30 +465,21 @@ namespace MyFileSync
 			}
 			return null;
 		}
-	    Dictionary<int, WatchNotification> _testNotifications=new Dictionary<int, WatchNotification>();
-		WatchNotification fl = new WatchNotification(@"D:\Test\Summerise",DateTime.Now,FileSystemActionType.FileChange);
-		WatchNotification dl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Delete);
-		WatchNotification cr = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Create);
-		WatchNotification rn = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Rename);
+
 		public void Inhabit_testNotifications()
 		{
-			_testNotifications.Add(1, fl);
-			_testNotifications.Add(2, dl);
-			_testNotifications.Add(3, cr);
-			_testNotifications.Add(4, rn);
 		}
-		
 
-		public void Summerize()
+		public Dictionary<int, WatchNotification> Summerize(Dictionary<int, WatchNotification> notifications)
         {
-            int cnt = _testNotifications.Count - 1;
+            int cnt = notifications.Count - 1;
             int loop = 0;
             List<WatchNotification> complexNtf = new List<WatchNotification>();
             WatchNotification currentNtf, nextNtf;
             
             while (loop <= cnt)
             {
-				RefreshSummerise(loop, out currentNtf, out nextNtf);
+				RefreshSummerise(notifications, loop, out currentNtf, out nextNtf);
 				if (currentNtf.Type == FileSystemActionType.Create && nextNtf.Type == FileSystemActionType.Delete)// catch cr+ dl sequence
                 {
                     if (CommonUtility.CompareName(currentNtf.Path, nextNtf.Path) && CommonUtility.isDirIdentical(currentNtf.Path, nextNtf.Path))
@@ -497,8 +487,8 @@ namespace MyFileSync
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
                             Console.Out.WriteLine("catch cr+dl sequence success");
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop).Key);
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop+1).Key);
+                            notifications.Remove(notifications.ElementAt(loop).Key);
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
@@ -509,7 +499,7 @@ namespace MyFileSync
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
                             Console.Out.WriteLine("catch fl+dl catched");
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop+1).Key);
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
@@ -520,7 +510,7 @@ namespace MyFileSync
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
                             Console.Out.WriteLine("cr+rn catched");                           
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop+1).Key);
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
@@ -530,7 +520,7 @@ namespace MyFileSync
                     {
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop+1).Key);
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
@@ -540,19 +530,20 @@ namespace MyFileSync
                     {
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
-                            _testNotifications.ElementAt(loop).Value.Path = nextNtf.Path;
-                            _testNotifications.Remove(_testNotifications.ElementAt(loop+1).Key);
+                            notifications.ElementAt(loop).Value.Path = nextNtf.Path;
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
 				loop += 1;               
             }
+			return notifications;
         }
 
-		void RefreshSummerise(int loop, out WatchNotification currentNtf, out WatchNotification nextNtf)
+		void RefreshSummerise(Dictionary<int, WatchNotification> notifications, int loop, out WatchNotification currentNtf, out WatchNotification nextNtf)
 		{
-			currentNtf = _testNotifications.ElementAt(loop).Value;
-			nextNtf = _testNotifications.ElementAt(loop + 1).Value;
+			currentNtf = notifications.ElementAt(loop).Value;
+			nextNtf = notifications.ElementAt(loop + 1).Value;
 		}
 	}
 }
