@@ -201,5 +201,11 @@ namespace MyFileSync.Console
         {
 
         }
+
+        private void btn_Summerise_Click(object sender, EventArgs e)
+        {
+			Watcher.Instance.Inhabit_testNotifications();
+			Watcher.Instance.Summerize();
+        }
     }
 }
