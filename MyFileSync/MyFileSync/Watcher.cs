@@ -395,63 +395,7 @@ namespace MyFileSync
 							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Move);
 							return sysEvent;
 						}
-					}
-				}
-				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)// catch cr+ dl sequence
-				{
-					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path) && CommonUtility.isDirIdentical(ntf.Path, oldNtf.Path))
-					{
-						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
-						{							
-							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.NoAction);
-							return sysEvent;
-						}
-					}
-				}
-				else if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.FileChange)
-				{
-					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
-					{
-						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
-						{
-							ntf.Type = FileSystemActionType.Delete;
-							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Delete);
-							return sysEvent;
-						}
-					}
-				}
-				else if (ntf.Type == FileSystemActionType.Rename && oldNtf.Type == FileSystemActionType.Create)
-				{
-					if (CommonUtility.isDirIdentical(ntf.Path, oldNtf.Path))
-					{
-						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
-						{
-							ntf.Type = FileSystemActionType.Create;
-							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
-							return sysEvent;
-						}
-					}
-				}
-				else if (ntf.Type == FileSystemActionType.FileChange && oldNtf.Type == FileSystemActionType.Create)
-				{
-					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
-					{
-						ntf.Type = FileSystemActionType.Create;
-						Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
-						return sysEvent;
-					}
-				}
-				else if (ntf.Type == FileSystemActionType.Move && oldNtf.Type == FileSystemActionType.Create)
-				{ 
-					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path))
-					{
-						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
-						{
-							//ntf.Type = FileSystemActionType.Create;
-							Tuple<int, AggregateType> sysEvent = new Tuple<int, AggregateType>(oldKey, AggregateType.Create);
-							return sysEvent;
-						}
-					}						
+					}				
 				}
 				string parentDir = Path.GetDirectoryName(ntf.Path);
 				foreach (var exixstingNtf in _notifications)
