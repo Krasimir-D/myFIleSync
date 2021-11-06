@@ -76,9 +76,9 @@ namespace MyFileSync
 		#endregion
 
 		private Queue<WatchNotification> _rawNotifications;
-		private Dictionary<int, WatchNotification> _notifications;
+		protected Dictionary<int, WatchNotification> _notifications;
 		private List<FileSystemWatcher> _systemWatchers;
-		private Dictionary<int, List<WatchNotification>> _complexNotifications;
+		private Dictionary<int, List<WatchNotification>> _complexNotifications = new Dictionary<int, List<WatchNotification>>();
 		
 		public static List<char> DriveLetters
 		{
@@ -215,8 +215,7 @@ namespace MyFileSync
 				type = FileSystemActionType.Rename;
 
 			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
-			this._rawNotifications.Enqueue(ntf);
-			int i = 0;
+			this._rawNotifications.Enqueue(ntf);		
 		}
 
 		private static WatchActionType FindActionType(List<PathValue?> paths, string path)
@@ -312,6 +311,10 @@ namespace MyFileSync
 
 				this._rawNotifications.Dequeue();
 			}
+		}
+		public Dictionary<int, WatchNotification> Notifications
+		{
+			get { return this._notifications; }
 		}
 		public List<Tuple<string, string, DateTime>> preparedNotifications = new List<Tuple<string, string, DateTime>>();
 		public List<Tuple<string, string, DateTime>> VizuallizeNotifications()
@@ -412,18 +415,26 @@ namespace MyFileSync
 
 		public void Inhabit_testNotifications()
 		{
+			WatchNotification fl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.FileChange);
+			WatchNotification dl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Delete);
+			WatchNotification cr = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Create);
+			WatchNotification rn = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Rename);
+			_notifications.Add(1, fl);
+			_notifications.Add(2, dl);
+			_notifications.Add(3, cr);
+			_notifications.Add(4, rn);
 		}
 
 		public Dictionary<int, WatchNotification> Summerize(Dictionary<int, WatchNotification> notifications)
         {
             int cnt = notifications.Count - 1;
-            int loop = 0;
-            List<WatchNotification> complexNtf = new List<WatchNotification>();
+            int loop = 0;          
             WatchNotification currentNtf, nextNtf;
             
             while (loop <= cnt)
             {
-				RefreshSummerise(notifications, loop, out currentNtf, out nextNtf);
+				RefreshSummerize(notifications, loop, out currentNtf, out nextNtf);
+				List<WatchNotification> complexNtf = new List<WatchNotification>();
 				if (currentNtf.Type == FileSystemActionType.Create && nextNtf.Type == FileSystemActionType.Delete)// catch cr+ dl sequence
                 {
                     if (CommonUtility.CompareName(currentNtf.Path, nextNtf.Path) && CommonUtility.isDirIdentical(currentNtf.Path, nextNtf.Path))
@@ -443,7 +454,10 @@ namespace MyFileSync
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
                             Console.Out.WriteLine("catch fl+dl catched");
-                            notifications.Remove(notifications.ElementAt(loop+1).Key);
+							complexNtf.Add(currentNtf);
+							complexNtf.Add(nextNtf);
+							_complexNotifications.Add(loop, complexNtf);
+                            notifications.Remove(notifications.ElementAt(loop).Key);
                         }
                     }
                 }
@@ -453,7 +467,11 @@ namespace MyFileSync
                     {
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
-                            Console.Out.WriteLine("cr+rn catched");                           
+                            Console.Out.WriteLine("cr+rn catched");
+							complexNtf.Add(currentNtf);
+							complexNtf.Add(nextNtf);
+							_complexNotifications.Add(loop, complexNtf);
+							notifications.ElementAt(loop).Value.Path = nextNtf.Path;
                             notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
@@ -464,7 +482,10 @@ namespace MyFileSync
                     {
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
-                            notifications.Remove(notifications.ElementAt(loop+1).Key);
+							complexNtf.Add(currentNtf);
+							complexNtf.Add(nextNtf);
+							_complexNotifications.Add(loop, complexNtf);
+							notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
@@ -474,17 +495,35 @@ namespace MyFileSync
                     {
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
-                            notifications.ElementAt(loop).Value.Path = nextNtf.Path;
+							complexNtf.Add(currentNtf);
+							complexNtf.Add(nextNtf);
+							_complexNotifications.Add(loop, complexNtf);
+							notifications.ElementAt(loop).Value.Path = nextNtf.Path;
                             notifications.Remove(notifications.ElementAt(loop+1).Key);
                         }
                     }
                 }
+				else if (nextNtf.Type == FileSystemActionType.Delete && currentNtf.Type == FileSystemActionType.Move)// catch mv+dl sequence
+				{
+					if (CommonUtility.CompareName(currentNtf.Path, nextNtf.Path))
+					{
+						if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
+						{
+							Console.Out.WriteLine("catch mv+dl catched");
+							complexNtf.Add(currentNtf);
+							complexNtf.Add(nextNtf);
+							_complexNotifications.Add(loop, complexNtf);
+							notifications.ElementAt(loop).Value.Path = nextNtf.Path;
+							notifications.Remove(notifications.ElementAt(loop).Key);
+						}
+					}
+				}
 				loop += 1;               
             }
 			return notifications;
         }
 
-		void RefreshSummerise(Dictionary<int, WatchNotification> notifications, int loop, out WatchNotification currentNtf, out WatchNotification nextNtf)
+		void RefreshSummerize(Dictionary<int, WatchNotification> notifications, int loop, out WatchNotification currentNtf, out WatchNotification nextNtf)
 		{
 			currentNtf = notifications.ElementAt(loop).Value;
 			nextNtf = notifications.ElementAt(loop + 1).Value;

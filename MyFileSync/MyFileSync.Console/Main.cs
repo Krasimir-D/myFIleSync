@@ -14,7 +14,7 @@ using System.Timers;
 
 namespace MyFileSync.Console
 {
-	public partial class Main : Form
+	public partial class Main : Form 
 	{
 		public Main()
 		{

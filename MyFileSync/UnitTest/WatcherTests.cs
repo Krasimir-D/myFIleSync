@@ -9,7 +9,7 @@ namespace UnitTest
 	public class WatcherTests
 	{
 		[TestMethod]
-		public void TestMethod1()
+		public void Summerize()
 		{
 			bool error = false;
 
@@ -17,7 +17,7 @@ namespace UnitTest
 			WatchNotification fl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.FileChange);
 			WatchNotification dl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Delete);
 			WatchNotification cr = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Create);
-			WatchNotification rn = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Rename);
+			WatchNotification rn = new WatchNotification(@"D:\Test\Renamed", DateTime.Now, FileSystemActionType.Rename);
 			testNotifications.Add(1, fl);
 			testNotifications.Add(2, dl);
 			testNotifications.Add(3, cr);
@@ -33,8 +33,8 @@ namespace UnitTest
 			{
 				error = true;
 			}
-			Assert.IsFalse(error);
-			Assert.IsFalse(testNotifications.Count == 2);
+			Assert.IsTrue(error);
+			Assert.IsTrue(testNotifications.Count == 2);
 		}
 	}
 }
