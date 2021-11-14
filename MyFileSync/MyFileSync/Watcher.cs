@@ -284,31 +284,8 @@ namespace MyFileSync
                             existingNtf.Path = ntf.Path;
                         }
                         existingNtf.Type = FileSystemActionType.Move;
-                    }
-                    else if (result.Item2 == AggregateType.NewFolder)
-                    {
-
-                    }
-                    else if (result.Item2 == AggregateType.Delete)
-					{
-						existingNtf.Path = ntf.Path;
-						existingNtf.Type = FileSystemActionType.Delete;
-						ntf.Type = FileSystemActionType.Delete;
-						Console.Out.WriteLine("*+ delete achieved");											
-					}
-                    else if (result.Item2==AggregateType.Create)
-                    {
-						existingNtf.OldPath = existingNtf.Path;
-						existingNtf.Path = ntf.Path;
-						existingNtf.Type = FileSystemActionType.Create;
-                    }
-                    else if (result.Item2==AggregateType.NoAction)
-                    {
-						existingNtf.Path = ntf.Path;
-						existingNtf.Type = ntf.Type;
-                    }
+                    }                   
 				}
-
 				this._rawNotifications.Dequeue();
 			}
 		}
@@ -317,7 +294,7 @@ namespace MyFileSync
 			get { return this._notifications; }
 		}
 		public List<Tuple<string, string, DateTime>> preparedNotifications = new List<Tuple<string, string, DateTime>>();
-		public List<Tuple<string, string, DateTime>> VizuallizeNotifications()
+		/*public List<Tuple<string, string, DateTime>> VizuallizeNotifications()
 		{
 			string type = "";
 			string path = "";
@@ -375,7 +352,7 @@ namespace MyFileSync
 				//_notifications.Remove(item.Key); За Маркиране 
 			}
 			return preparedNotifications;
-		}
+		}*/
 
 		private Tuple<int, AggregateType> CheckIfMoved(WatchNotification ntf)
 		{
@@ -413,7 +390,7 @@ namespace MyFileSync
 			return null;
 		}
 
-		public void Inhabit_testNotifications()
+		/*public void Inhabit_testNotifications()
 		{
 			WatchNotification fl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.FileChange);
 			WatchNotification dl = new WatchNotification(@"D:\Test\Summerise", DateTime.Now, FileSystemActionType.Delete);
@@ -423,7 +400,7 @@ namespace MyFileSync
 			_notifications.Add(2, dl);
 			_notifications.Add(3, cr);
 			_notifications.Add(4, rn);
-		}
+		}*/
 
 		public Dictionary<int, WatchNotification> Summerize(Dictionary<int, WatchNotification> notifications)
         {
@@ -431,7 +408,7 @@ namespace MyFileSync
             int loop = 0;          
             WatchNotification currentNtf, nextNtf;
             
-            while (loop <= cnt)
+            while (loop < cnt)
             {
 				RefreshSummerize(notifications, loop, out currentNtf, out nextNtf);
 				List<WatchNotification> complexNtf = new List<WatchNotification>();

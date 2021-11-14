@@ -11,6 +11,7 @@ using System.IO;
 using MyFileSync.Enumerators;
 using System.Threading;
 using System.Timers;
+using static MyFileSync.Watcher;
 
 namespace MyFileSync.Console
 {
@@ -44,7 +45,7 @@ namespace MyFileSync.Console
         {
 			LoadListViewConfig();
 			Watcher.Instance.Raw2Aggregate();
-			LoadListViewNotif();			
+			LoadListViewNotif(Watcher.Instance.Notifications);				
 		}
 
 		private void LoadListViewConfig()
@@ -57,20 +58,65 @@ namespace MyFileSync.Console
 			}
 			this.listView_Paths.Refresh();
 		}
-		private void LoadListViewNotif()
+		private void LoadListViewNotif(Dictionary<int, Watcher.WatchNotification> notifications)
 		{
-			
-			List<Tuple<string, string, DateTime>> notifications = new List<Tuple<string, string, DateTime>>();
-			notifications = Watcher.Instance.VizuallizeNotifications();
-			this.listView_Notifications.Items.Clear();
 
-			foreach (var item in notifications)
+            string type = "";
+            string path = "";
+            DateTime time;
+            Watcher.WatchNotification tmpNot;
+            for (int cnt = 0; cnt < notifications.Count(); cnt++)
             {
-				string[] values = { item.Item3.ToString(),item.Item2,item.Item1 };
-				this.listView_Notifications.Items.Add(new ListViewItem(values));
+                var item = notifications.ElementAt(cnt);
+                tmpNot = item.Value;
+                if (tmpNot.Type == FileSystemActionType.Create)
+                {
+                    type = "Created";
+                    path = tmpNot.Path;
+                    time = tmpNot.Time;
+                    string[] values = { type, path, time.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values));
+
+                }
+                else if (tmpNot.Type == FileSystemActionType.Delete)
+                {
+                    type = "Deleted";
+                    path = tmpNot.Path;
+                    time = tmpNot.Time;
+                    string[] values = { type, path, time.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values));
+                }
+                else if (tmpNot.Type == FileSystemActionType.FileChange)
+                {
+                    type = "Changed";
+                    path = tmpNot.Path;
+                    time = tmpNot.Time;
+                    string[] values = { type, path, time.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values));
+                }
+                else if (tmpNot.Type == FileSystemActionType.Move)
+                {
+                    type = "Moved";
+                    path = tmpNot.Path;
+                    time = tmpNot.Time;
+                    string[] values = { type, path, time.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values));
+                }
+                else if (tmpNot.Type == FileSystemActionType.Rename)
+                {
+                    type = "Renamed";
+                    path = string.Format(" File renamed to {0}", tmpNot.Path);
+                    time = tmpNot.Time;
+                    string[] values = { type, path, time.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values)); ;
+                }
+                else if (tmpNot.Type == FileSystemActionType.NoAction)
+                {
+                    notifications.Remove(item.Key);
+                }
             }
 			notifications.Clear();
-		}	
+        }	
 
 		private void btnPush_Click(object sender, EventArgs e)        {
 
@@ -105,7 +151,7 @@ namespace MyFileSync.Console
 		{
 			Watcher.Instance.Start();
 			btnAggregate.Enabled = true;
-		//	SetTimer();
+			//SetTimer();
 		}
 
 		private void button2_Click(object sender, EventArgs e)
@@ -132,19 +178,17 @@ namespace MyFileSync.Console
 		{
 			if (this.InvokeRequired)
 			{
-				MyFileSync.Watcher.Instance.Raw2Aggregate();
-
-				// Call this same method but append THREAD2 to the text
-				Action safeWrite = delegate { LoadListViewNotif(); };
+				MyFileSync.Watcher.Instance.Raw2Aggregate();				
+				Action safeWrite = delegate { LoadListViewNotif(Watcher.Instance.Notifications); };
 				this.Invoke(safeWrite);
 			}
 			else
-				this.LoadListViewNotif();			
+				this.LoadListViewNotif(Watcher.Instance.Notifications);			
 		}
 		private void button4_Click(object sender, EventArgs e)
 		{			
 			MyFileSync.Watcher.Instance.Raw2Aggregate();
-			LoadListViewNotif();
+			LoadListViewNotif(Watcher.Instance.Notifications);
 		  }		
 
         private void bntChange_Click(object sender, EventArgs e)
@@ -204,8 +248,8 @@ namespace MyFileSync.Console
 
         private void btn_Summerise_Click(object sender, EventArgs e)
         {
-			Watcher.Instance.Inhabit_testNotifications();
-			Watcher.Instance.Summerize(null);
+			Watcher.Instance.Raw2Aggregate();
+			Watcher.Instance.Summerize(Watcher.Instance.Notifications);
         }
     }
 }
