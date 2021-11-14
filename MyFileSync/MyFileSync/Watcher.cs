@@ -55,6 +55,14 @@ namespace MyFileSync
 				this.Time = time;
 				this.Type = type;
 			}
+
+			public WatchNotification(string path, string oldPath, DateTime time, FileSystemActionType type)
+			{
+				this.Path = path;
+				this.OldPath = oldPath;
+				this.Time = time;
+				this.Type = type;
+			}
 		}
 
 		private struct PathValue
@@ -248,7 +256,7 @@ namespace MyFileSync
 
 			if (actionType == WatchActionType.Ignore)
 				return;
-			WatchNotification ntf = new WatchNotification(e.FullPath, time, type);
+			WatchNotification ntf = new WatchNotification(e.FullPath, e.OldFullPath, time, type);
 			this._rawNotifications.Enqueue(ntf);
 			
 			Console.Out.WriteLine("{0} {1}", e.FullPath, e.ChangeType.ToString());
