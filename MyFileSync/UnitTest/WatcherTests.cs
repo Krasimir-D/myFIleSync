@@ -39,6 +39,8 @@ namespace UnitTest
 			Instance.Stop();
 
 			Assert.IsTrue(testNotifications.Count == 2);
+			Assert.IsTrue(testNotifications[2].Type == FileSystemActionType.Delete);
+			Assert.IsTrue(testNotifications[3].Type == FileSystemActionType.Create);
 		}
 	}
 }

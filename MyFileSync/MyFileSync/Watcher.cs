@@ -429,6 +429,8 @@ namespace MyFileSync
                             Console.Out.WriteLine("catch cr+dl sequence success");
                             notifications.Remove(notifications.ElementAt(loop).Key);
                             notifications.Remove(notifications.ElementAt(loop+1).Key);
+							if (loop > 0)
+								loop--;
                         }
                     }
                 }
@@ -502,8 +504,11 @@ namespace MyFileSync
 							notifications.Remove(notifications.ElementAt(loop).Key);
 						}
 					}
+				} else
+				{
+					loop += 1;
 				}
-				loop += 1;               
+				cnt = notifications.Count - 1;
             }
 			return notifications;
         }
