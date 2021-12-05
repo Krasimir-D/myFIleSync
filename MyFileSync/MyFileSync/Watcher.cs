@@ -431,8 +431,8 @@ namespace MyFileSync
                         if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
                         {
                             Console.Out.WriteLine("catch cr+dl sequence success");
-                            notifications.Remove(notifications.ElementAt(loop).Key);
-                            notifications.Remove(notifications.ElementAt(loop+1).Key);
+							notifications.Remove(notifications.ElementAt(loop + 1).Key);
+							notifications.Remove(notifications.ElementAt(loop).Key);
 							if (loop > 0)
 								loop--;
                         }

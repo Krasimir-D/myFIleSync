@@ -20,7 +20,7 @@ namespace UnitTest
 		}
 
 		[TestMethod]
-		public void Summerize()
+		public void Summerize1()
 		{
 			string testPath = this.LoadTestPath();
 
@@ -41,6 +41,24 @@ namespace UnitTest
 			Assert.IsTrue(testNotifications.Count == 2);
 			Assert.IsTrue(testNotifications[2].Type == FileSystemActionType.Delete);
 			Assert.IsTrue(testNotifications[3].Type == FileSystemActionType.Create);
+		}
+
+		[TestMethod]
+		public void Summerize2()
+		{
+			string testPath = this.LoadTestPath();
+
+			Dictionary<int, WatchNotification> testNotifications = new Dictionary<int, WatchNotification>();
+			WatchNotification fl = new WatchNotification(Path.Combine(testPath, "nullify"), DateTime.Now, FileSystemActionType.Create);
+			WatchNotification dl = new WatchNotification(Path.Combine(testPath, "nullify"), DateTime.Now, FileSystemActionType.Delete);
+			testNotifications.Add(1, fl);
+			testNotifications.Add(2, dl);
+
+			Instance.Start();
+			testNotifications = Instance.Summerize(testNotifications);
+			Instance.Stop();
+
+			Assert.IsTrue(testNotifications.Count == 0);
 		}
 	}
 }
