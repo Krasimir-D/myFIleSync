@@ -52,7 +52,6 @@ namespace MyFileSync.Console
             this.columnTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnActionType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.btn_Summerise = new System.Windows.Forms.Button();
             this.tabNotifications.SuspendLayout();
             this.tabDir.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -268,22 +267,11 @@ namespace MyFileSync.Console
             this.columnActionType.Text = "Action";
             this.columnActionType.Width = 76;
             // 
-            // btn_Summerise
-            // 
-            this.btn_Summerise.Location = new System.Drawing.Point(50, 486);
-            this.btn_Summerise.Name = "btn_Summerise";
-            this.btn_Summerise.Size = new System.Drawing.Size(131, 33);
-            this.btn_Summerise.TabIndex = 13;
-            this.btn_Summerise.Text = "Summerise";
-            this.btn_Summerise.UseVisualStyleBackColor = true;
-            this.btn_Summerise.Click += new System.EventHandler(this.btn_Summerise_Click);
-            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1106, 598);
-            this.Controls.Add(this.btn_Summerise);
             this.Controls.Add(this.tabNotifications);
             this.Controls.Add(this.btnAggregate);
             this.Controls.Add(this.btnSave);
@@ -328,7 +316,6 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader columnTime;
         private System.Windows.Forms.ColumnHeader columnFile;
         private System.Windows.Forms.ColumnHeader columnActionType;
-        private System.Windows.Forms.Button btn_Summerise;
     }
 }
 

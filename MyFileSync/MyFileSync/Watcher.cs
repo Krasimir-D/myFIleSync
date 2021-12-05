@@ -295,6 +295,10 @@ namespace MyFileSync
                     }                   
 				}
 				this._rawNotifications.Dequeue();
+                if (_rawNotifications.Count==0)
+                {
+					this.Summerize(_notifications);
+				}               
 			}
 		}
 		public Dictionary<int, WatchNotification> Notifications
@@ -372,7 +376,7 @@ namespace MyFileSync
 				int cnt=_notifications.Count;
 				int oldKey = _notifications.ElementAt(cnt - 1).Key;
 				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
-				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create)// Try- catch moved event
+				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create|| ntf.Type == FileSystemActionType.Create && oldNtf.Type == FileSystemActionType.Delete)// Try- catch moved event
 				{
 					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path)&&!CommonUtility.isDirIdentical(ntf.Path,oldNtf.Path))
 					{
@@ -424,12 +428,9 @@ namespace MyFileSync
                 {
                     if (CommonUtility.CompareName(currentNtf.Path, nextNtf.Path) && CommonUtility.isDirIdentical(currentNtf.Path, nextNtf.Path))
                     {
-                        if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
-                        {
-                            Console.Out.WriteLine("catch cr+dl sequence success");
-                            notifications.Remove(notifications.ElementAt(loop).Key);
-                            notifications.Remove(notifications.ElementAt(loop+1).Key);
-                        }
+                        Console.Out.WriteLine("catch cr+dl sequence success");
+                        notifications.Remove(notifications.ElementAt(loop).Key);
+                        notifications.Remove(notifications.ElementAt(loop + 1).Key);
                     }
                 }
                 else if (nextNtf.Type == FileSystemActionType.Delete && currentNtf.Type == FileSystemActionType.FileChange)// catch fl+dl sequence

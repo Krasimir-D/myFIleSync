@@ -64,6 +64,7 @@ namespace MyFileSync.Console
             string type = "";
             string path = "";
             DateTime time;
+			string oldPath = "";
             Watcher.WatchNotification tmpNot;
             for (int cnt = 0; cnt < notifications.Count(); cnt++)
             {
@@ -74,7 +75,7 @@ namespace MyFileSync.Console
                     type = "Created";
                     path = tmpNot.Path;
                     time = tmpNot.Time;
-                    string[] values = { type, path, time.ToString() };
+					string[] values = { time.ToString(), path, type.ToString() };
                     this.listView_Notifications.Items.Add(new ListViewItem(values));
 
                 }
@@ -83,7 +84,7 @@ namespace MyFileSync.Console
                     type = "Deleted";
                     path = tmpNot.Path;
                     time = tmpNot.Time;
-                    string[] values = { type, path, time.ToString() };
+					string[] values = { time.ToString(), path, type.ToString() };
                     this.listView_Notifications.Items.Add(new ListViewItem(values));
                 }
                 else if (tmpNot.Type == FileSystemActionType.FileChange)
@@ -91,7 +92,7 @@ namespace MyFileSync.Console
                     type = "Changed";
                     path = tmpNot.Path;
                     time = tmpNot.Time;
-                    string[] values = { type, path, time.ToString() };
+					string[] values = { time.ToString(), path, type.ToString() };
                     this.listView_Notifications.Items.Add(new ListViewItem(values));
                 }
                 else if (tmpNot.Type == FileSystemActionType.Move)
@@ -99,16 +100,17 @@ namespace MyFileSync.Console
                     type = "Moved";
                     path = tmpNot.Path;
                     time = tmpNot.Time;
-                    string[] values = { type, path, time.ToString() };
+					string[] values = { time.ToString(), path, type.ToString() };
                     this.listView_Notifications.Items.Add(new ListViewItem(values));
                 }
                 else if (tmpNot.Type == FileSystemActionType.Rename)
                 {
                     type = "Renamed";
-                    path = string.Format(" File renamed to {0}", tmpNot.Path);
+					oldPath = tmpNot.OldPath;
+					path = string.Format(" File from {0} to {1}", oldPath, tmpNot.Path); 
                     time = tmpNot.Time;
-                    string[] values = { type, path, time.ToString() };
-                    this.listView_Notifications.Items.Add(new ListViewItem(values)); ;
+                    string[] values = { time.ToString(), path, type.ToString() };
+                    this.listView_Notifications.Items.Add(new ListViewItem(values)); 
                 }
                 else if (tmpNot.Type == FileSystemActionType.NoAction)
                 {
