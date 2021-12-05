@@ -428,9 +428,14 @@ namespace MyFileSync
                 {
                     if (CommonUtility.CompareName(currentNtf.Path, nextNtf.Path) && CommonUtility.isDirIdentical(currentNtf.Path, nextNtf.Path))
                     {
-                        Console.Out.WriteLine("catch cr+dl sequence success");
-                        notifications.Remove(notifications.ElementAt(loop).Key);
-                        notifications.Remove(notifications.ElementAt(loop + 1).Key);
+                        if (CommonUtility.TimeComp(nextNtf.Time, currentNtf.Time))
+                        {
+                            Console.Out.WriteLine("catch cr+dl sequence success");
+                            notifications.Remove(notifications.ElementAt(loop).Key);
+                            notifications.Remove(notifications.ElementAt(loop+1).Key);
+							if (loop > 0)
+								loop--;
+                        }
                     }
                 }
                 else if (nextNtf.Type == FileSystemActionType.Delete && currentNtf.Type == FileSystemActionType.FileChange)// catch fl+dl sequence
@@ -503,8 +508,11 @@ namespace MyFileSync
 							notifications.Remove(notifications.ElementAt(loop).Key);
 						}
 					}
+				} else
+				{
+					loop += 1;
 				}
-				loop += 1;               
+				cnt = notifications.Count - 1;
             }
 			return notifications;
         }
