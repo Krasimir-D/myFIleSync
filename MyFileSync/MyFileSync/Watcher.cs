@@ -112,19 +112,25 @@ namespace MyFileSync
 			{
 				if (_paths == null)
 				{
-					_paths = new Dictionary<char, List<PathValue?>>();
-					foreach (var path in ConfigManager.Config.Paths)
-					{
-						char driveLetter = Path.GetPathRoot(path.PathOnDisk)[0];
-						if (!_paths.ContainsKey(driveLetter))
-							_paths.Add(driveLetter, new List<PathValue?>());
-
-						_paths[driveLetter].Add(new PathValue(CommonUtility.NormalizePath(path.PathOnDisk), (WatchActionType)path.Action));
-					}
+					SetPaths();
 				}
 				return _paths;
 			}
 		}
+
+		private static void SetPaths()
+		{
+			_paths = new Dictionary<char, List<PathValue?>>();
+			foreach (var path in ConfigManager.Config.Paths)
+			{
+				char driveLetter = Path.GetPathRoot(path.PathOnDisk)[0];
+				if (!_paths.ContainsKey(driveLetter))
+					_paths.Add(driveLetter, new List<PathValue?>());
+
+				_paths[driveLetter].Add(new PathValue(CommonUtility.NormalizePath(path.PathOnDisk), (WatchActionType)path.Action));
+			}
+		}
+
 		public void CleanConfig()
 		{
 			_paths = null;
@@ -165,6 +171,7 @@ namespace MyFileSync
 
 		public void Start()
 		{
+			SetPaths();
 			foreach (var watcher in this._systemWatchers)
 			{
 				watcher.Changed += new FileSystemEventHandler(Watcher_Event);
