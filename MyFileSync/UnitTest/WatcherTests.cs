@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using static MyFileSync.Watcher;
+using System.Threading;
 
 namespace UnitTest
 {
@@ -59,6 +60,33 @@ namespace UnitTest
 			Instance.Stop();
 
 			Assert.IsTrue(testNotifications.Count == 0);
+		}
+		[TestMethod]
+		public void Raw2Aggregate()
+		{
+			string testPath = this.LoadTestPath();
+			Instance.Start();
+			Thread.Sleep(2000);
+			File.Create(Path.Combine(testPath, "testRaw"));
+			Thread.Sleep(2000);
+			Instance.Raw2Aggregate();
+			Assert.IsTrue(Instance.Notifications.Count==1);
+			Instance.Stop();
+		}
+		[TestMethod]
+		public void Raw2Aggregate_move()
+		{
+			string testPath = this.LoadTestPath();
+			string testRaw_pth = Path.Combine(testPath, "testRaw");
+			File.Create(testRaw_pth).Close();	
+			Instance.Start();
+			Thread.Sleep(2000);
+			File.Move(testRaw_pth, Path.Combine(testPath,"One"));
+			Thread.Sleep(2000);
+			Instance.Raw2Aggregate();
+			Assert.IsTrue(Instance.Notifications.Count == 1);
+			Assert.IsTrue(Instance.Notifications[0].Type == FileSystemActionType.Move);
+			Instance.Stop();
 		}
 	}
 }

@@ -32,8 +32,6 @@ namespace MyFileSync.Console
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
-            this.txtNotif = new System.Windows.Forms.TextBox();
-            this.btnPushNot = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
@@ -62,25 +60,6 @@ namespace MyFileSync.Console
             this.notifyIcon1.Text = "notifyIcon1";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
-            // 
-            // txtNotif
-            // 
-            this.txtNotif.Location = new System.Drawing.Point(265, 138);
-            this.txtNotif.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.txtNotif.Name = "txtNotif";
-            this.txtNotif.Size = new System.Drawing.Size(193, 22);
-            this.txtNotif.TabIndex = 2;
-            // 
-            // btnPushNot
-            // 
-            this.btnPushNot.Location = new System.Drawing.Point(50, 130);
-            this.btnPushNot.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.btnPushNot.Name = "btnPushNot";
-            this.btnPushNot.Size = new System.Drawing.Size(165, 30);
-            this.btnPushNot.TabIndex = 3;
-            this.btnPushNot.Text = "Push notification";
-            this.btnPushNot.UseVisualStyleBackColor = true;
-            this.btnPushNot.Click += new System.EventHandler(this.btnPush_Click);
             // 
             // btnStart
             // 
@@ -119,7 +98,7 @@ namespace MyFileSync.Console
             // btnAggregate
             // 
             this.btnAggregate.Enabled = false;
-            this.btnAggregate.Location = new System.Drawing.Point(815, 61);
+            this.btnAggregate.Location = new System.Drawing.Point(898, 61);
             this.btnAggregate.Margin = new System.Windows.Forms.Padding(4);
             this.btnAggregate.Name = "btnAggregate";
             this.btnAggregate.Size = new System.Drawing.Size(154, 28);
@@ -277,8 +256,6 @@ namespace MyFileSync.Console
             this.Controls.Add(this.btnSave);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.btnStart);
-            this.Controls.Add(this.btnPushNot);
-            this.Controls.Add(this.txtNotif);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "Main";
@@ -289,15 +266,12 @@ namespace MyFileSync.Console
             this.tabDir.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
 		}
 
         #endregion
 
         private System.Windows.Forms.NotifyIcon notifyIcon1;
-        private System.Windows.Forms.TextBox txtNotif;
-        private System.Windows.Forms.Button btnPushNot;
 		private System.Windows.Forms.Button btnStart;
 		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.Button btnSave;

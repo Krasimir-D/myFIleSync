@@ -120,12 +120,6 @@ namespace MyFileSync.Console
 			notifications.Clear();
         }	
 
-		private void btnPush_Click(object sender, EventArgs e)        {
-
-			int x = int.Parse(txtNotif.Text);
-			Notification(x);
-		}
-
         private void notifyIcon1_MouseDoubleClick(object sender, MouseEventArgs e)
         {
 			this.WindowState = FormWindowState.Normal;

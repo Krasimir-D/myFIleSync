@@ -9,6 +9,68 @@ namespace MyFileSync
 {
 	public class Watcher
 	{
+		#region Static
+		private static Watcher _watcher;
+		private static List<char> _driveLetters;
+		private static Dictionary<char, List<PathValue?>> _paths;
+		#endregion
+
+		private Queue<WatchNotification> _rawNotifications;
+		protected Dictionary<int, WatchNotification> _notifications;
+		private List<FileSystemWatcher> _systemWatchers;
+		private Dictionary<int, List<WatchNotification>> _complexNotifications = new Dictionary<int, List<WatchNotification>>();
+		public Dictionary<int, WatchNotification> Notifications
+		{
+			get { return this._notifications; }
+		}
+		public static List<char> DriveLetters
+		{
+			get
+			{
+				if (_driveLetters == null)
+				{
+					_driveLetters = new List<char>();
+					_driveLetters.Add('C');
+					_driveLetters.Add('D');
+				}
+				return _driveLetters;
+			}
+			set
+			{
+				_driveLetters = value;
+			}
+		}
+		public static Watcher Instance
+		{
+			get
+			{
+				if (_watcher == null)
+				{
+					_watcher = new Watcher(DriveLetters);
+				}
+				return _watcher;
+			}
+		}
+
+		private static Dictionary<char, List<PathValue?>> Paths
+		{
+			get
+			{
+				if (_paths == null)
+				{
+					_paths = new Dictionary<char, List<PathValue?>>();
+					foreach (var path in ConfigManager.Config.Paths)
+					{
+						char driveLetter = Path.GetPathRoot(path.PathOnDisk)[0];
+						if (!_paths.ContainsKey(driveLetter))
+							_paths.Add(driveLetter, new List<PathValue?>());
+
+						_paths[driveLetter].Add(new PathValue(CommonUtility.NormalizePath(path.PathOnDisk), (WatchActionType)path.Action));
+					}
+				}
+				return _paths;
+			}
+		}
 		public enum FileSystemActionType
 		{
 			Create,
@@ -77,70 +139,15 @@ namespace MyFileSync
 			}
 		}
 
-		#region Static
-		private static Watcher _watcher;
-		private static List<char> _driveLetters;
-		private static Dictionary<char, List<PathValue?>> _paths;
-		#endregion
-
-		private Queue<WatchNotification> _rawNotifications;
-		protected Dictionary<int, WatchNotification> _notifications;
-		private List<FileSystemWatcher> _systemWatchers;
-		private Dictionary<int, List<WatchNotification>> _complexNotifications = new Dictionary<int, List<WatchNotification>>();
 		
-		public static List<char> DriveLetters
-		{
-			get
-			{
-				if (_driveLetters == null)
-				{
-					_driveLetters = new List<char>();
-					_driveLetters.Add('C');
-                    _driveLetters.Add('D');
-                }
-				return _driveLetters;
-			}
-			set
-			{
-				_driveLetters = value;
-			}
-		}
-
-		private static Dictionary<char, List<PathValue?>> Paths
-		{
-			get
-			{
-				if (_paths == null)
-				{
-					_paths = new Dictionary<char, List<PathValue?>>();
-					foreach (var path in ConfigManager.Config.Paths)
-					{
-						char driveLetter = Path.GetPathRoot(path.PathOnDisk)[0];
-						if (!_paths.ContainsKey(driveLetter))
-							_paths.Add(driveLetter, new List<PathValue?>());
-
-						_paths[driveLetter].Add(new PathValue(CommonUtility.NormalizePath(path.PathOnDisk), (WatchActionType)path.Action));
-					}
-				}
-				return _paths;
-			}
-		}
+		
+		
 		public void CleanConfig()
 		{
 			_paths = null;
 		}
 
-		public static Watcher Instance
-		{
-			get
-			{
-				if (_watcher == null)
-				{
-					_watcher = new Watcher(DriveLetters);
-				}
-				return _watcher;
-			}
-		}
+		
 
 		private Watcher(List<char> driveLetters)
 		{
@@ -301,10 +308,7 @@ namespace MyFileSync
 				}               
 			}
 		}
-		public Dictionary<int, WatchNotification> Notifications
-		{
-			get { return this._notifications; }
-		}
+		
 		public List<Tuple<string, string, DateTime>> preparedNotifications = new List<Tuple<string, string, DateTime>>();
 		/*public List<Tuple<string, string, DateTime>> VizuallizeNotifications()
 		{
