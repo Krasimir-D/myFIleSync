@@ -280,7 +280,7 @@ namespace MyFileSync
 		}
 
 		public void Raw2Aggregate()
-		{
+		{			
 			while(this._rawNotifications.Count != 0)
 			{
 				var ntf = this._rawNotifications.Peek();
@@ -380,7 +380,7 @@ namespace MyFileSync
 			return preparedNotifications;
 		}*/
 
-		private Tuple<int, AggregateType> CheckIfMoved(WatchNotification ntf)
+		public Tuple<int, AggregateType> CheckIfMoved(WatchNotification ntf)
 		{
 			if (this._notifications.Count == 0)
 				return null;

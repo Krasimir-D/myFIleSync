@@ -77,16 +77,19 @@ namespace UnitTest
 		public void Raw2Aggregate_move()
 		{
 			string testPath = this.LoadTestPath();
-			string testRaw_pth = Path.Combine(testPath, "testRaw");
+			string testRaw_pth = Path.Combine(testPath, "testRaw2");
 			File.Create(testRaw_pth).Close();	
 			Instance.Start();
 			Thread.Sleep(2000);
-			File.Move(testRaw_pth, Path.Combine(testPath,"One"));
+			if (File.Exists(@"D:\Test\One\testRaw2"))
+				File.Delete(@"D:\Test\One\testRaw2");
+			string moved_pth = Path.Combine(testPath, "One");
+			File.Move(testRaw_pth, Path.Combine(moved_pth,"testRaw2")) ;			
 			Thread.Sleep(2000);
 			Instance.Raw2Aggregate();
 			Assert.IsTrue(Instance.Notifications.Count == 1);
 			Assert.IsTrue(Instance.Notifications[0].Type == FileSystemActionType.Move);
 			Instance.Stop();
-		}
+		}		
 	}
 }
