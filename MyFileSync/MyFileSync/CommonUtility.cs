@@ -33,25 +33,24 @@ namespace MyFileSync
 		}
 		public static bool isDirIdentical(string path1, string path2) // checks whether the path is the same except for the name in case of it being renamed event
 		{
-			bool answer = false;
-			int m = 0, n = 0;
+			int n = 0;
 			string[] pth1 = PathToArr(path1);
 			int cnt1 = pth1.Length;
 			string[] pth2 = PathToArr(path2);
 			int cnt2 = pth2.Length;
-            while (m<cnt1-2&&n<cnt2-2)
+
+			if (cnt1 != cnt2)
+				return false;
+
+			while (n < cnt1 - 1)
             {
-                if (pth1[m++]!=pth2[n++])
+                if (pth1[n] != pth2[n])
                 {
-					return answer;
-                }				
+					return false;
+                }
+				n++;
             }
-            if (m>cnt1-2||n>cnt2-2)
-            {
-				return answer;
-            }
-			answer = true;
-			return answer;
+			return true;
 		}
 
 		public static string[] PathToArr(string path)

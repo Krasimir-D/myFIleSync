@@ -76,19 +76,25 @@ namespace UnitTest
 		[TestMethod]
 		public void Raw2Aggregate_move()
 		{
+			//Test preparation
 			string testPath = this.LoadTestPath();
-			string testRaw_pth = Path.Combine(testPath, "testRaw2");
-			File.Create(testRaw_pth).Close();	
+			Directory.CreateDirectory(Path.Combine(testPath, "Start"));
+			Directory.CreateDirectory(Path.Combine(testPath, "End"));
+			string testRaw_pth = Path.Combine(testPath, @"Start\testRaw");
+			File.Create(testRaw_pth).Close();
+			string testRaw_pth_new = Path.Combine(testPath, "End\\testRaw");
+			if (File.Exists(testRaw_pth_new))
+				File.Delete(testRaw_pth_new);
+			Thread.Sleep(2000);
+
+			//Test body
 			Instance.Start();
 			Thread.Sleep(2000);
-			if (File.Exists(@"D:\Test\One\testRaw2"))
-				File.Delete(@"D:\Test\One\testRaw2");
-			string moved_pth = Path.Combine(testPath, "One");
-			File.Move(testRaw_pth, Path.Combine(moved_pth,"testRaw2")) ;			
-			Thread.Sleep(2000);
+			File.Move(testRaw_pth, Path.Combine(testPath, "End\\testRaw"));
+			Thread.Sleep(5000);
 			Instance.Raw2Aggregate();
 			Assert.IsTrue(Instance.Notifications.Count == 1);
-			Assert.IsTrue(Instance.Notifications[0].Type == FileSystemActionType.Move);
+			Assert.IsTrue(Instance.Notifications[1].Type == FileSystemActionType.Move);
 			Instance.Stop();
 		}		
 	}

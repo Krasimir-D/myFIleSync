@@ -390,9 +390,9 @@ namespace MyFileSync
 				int cnt=_notifications.Count;
 				int oldKey = _notifications.ElementAt(cnt - 1).Key;
 				var oldNtf = _notifications.ElementAt(cnt - 1).Value;
-				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create|| ntf.Type == FileSystemActionType.Create && oldNtf.Type == FileSystemActionType.Delete)// Try- catch moved event
+				if (ntf.Type == FileSystemActionType.Delete && oldNtf.Type == FileSystemActionType.Create || ntf.Type == FileSystemActionType.Create && oldNtf.Type == FileSystemActionType.Delete)// Try- catch moved event
 				{
-					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path)&&!CommonUtility.isDirIdentical(ntf.Path,oldNtf.Path))
+					if (CommonUtility.CompareName(ntf.Path, oldNtf.Path) && !CommonUtility.isDirIdentical(ntf.Path, oldNtf.Path))
 					{
 						if (CommonUtility.TimeComp(oldNtf.Time, ntf.Time))
 						{
