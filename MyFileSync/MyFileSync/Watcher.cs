@@ -15,10 +15,20 @@ namespace MyFileSync
 		private static Dictionary<char, List<PathValue?>> _paths;
 		#endregion
 
+
+
+
+
+
 		private Queue<WatchNotification> _rawNotifications;
 		protected Dictionary<int, WatchNotification> _notifications;
 		private List<FileSystemWatcher> _systemWatchers;
-		private Dictionary<int, List<WatchNotification>> _complexNotifications = new Dictionary<int, List<WatchNotification>>();
+		private Dictionary<int, List<WatchNotification>> _complexNotifications = new Dictionary<int, List<WatchNotification>>() ;
+
+		public Dictionary<int, List<WatchNotification>> ComplexNotifications
+		{
+			get { return _complexNotifications; }
+		}
 		public Dictionary<int, WatchNotification> Notifications
 		{
 			get { return this._notifications; }

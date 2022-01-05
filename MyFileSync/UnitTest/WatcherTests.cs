@@ -96,6 +96,58 @@ namespace UnitTest
 			Assert.IsTrue(Instance.Notifications.Count == 1);
 			Assert.IsTrue(Instance.Notifications[1].Type == FileSystemActionType.Move);
 			Instance.Stop();
-		}		
+		}
+
+		[TestMethod]
+		public void Summerise_test1() //create + delete test passed
+		{
+			//Test preparation
+			string testPath = this.LoadTestPath();			
+			string testRaw_pth = Path.Combine(testPath, @"testRaw");
+			if (File.Exists(testRaw_pth))
+				File.Delete(testRaw_pth);						
+			Thread.Sleep(2000);
+
+			//Test body
+			Instance.Start();
+			Thread.Sleep(2000);
+			File.Create(testRaw_pth).Close();
+			string newName = Path.Combine(testPath, @"newNameRaw");
+			if (File.Exists(newName))
+				File.Delete(newName);
+			File.Move(testRaw_pth,newName);
+			Thread.Sleep(5000);
+			Instance.Raw2Aggregate();
+			Assert.IsTrue(Instance.Notifications.Count == 1);
+			Assert.IsTrue(Instance.ComplexNotifications[0][0].Type == FileSystemActionType.Create);
+			Instance.Stop();
+		}
+
+		[TestMethod]
+		public void Summerise_test2() // fileChange + delete passed
+		{
+			//Test preparation
+			string testPath = this.LoadTestPath();
+			string testRaw_pth = Path.Combine(testPath, @"testRaw");
+			if (!File.Exists(testRaw_pth))
+				File.Create(testRaw_pth).Close();
+			Thread.Sleep(2000);
+
+			//Test body
+			Instance.Start();
+			Thread.Sleep(2000);
+			StreamWriter sw = new StreamWriter(testRaw_pth, true, System.Text.Encoding.Unicode);
+            using (sw)
+            {
+				sw.WriteLine("filechange is made");				
+            }
+			Thread.Sleep(5000);
+			File.Delete(testRaw_pth);
+			Thread.Sleep(5000);
+			Instance.Raw2Aggregate();
+			Assert.IsTrue(Instance.Notifications.Count == 1);
+			Assert.IsTrue(Instance.ComplexNotifications[0][1].Type == FileSystemActionType.Delete);
+			Instance.Stop();
+		}
 	}
 }
