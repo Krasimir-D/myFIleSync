@@ -1,5 +1,5 @@
 ﻿
-namespace MyFileSync
+namespace MyFileSync.Console
 {
     partial class ConfigForm
     {
