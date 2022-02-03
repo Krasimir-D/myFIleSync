@@ -15,7 +15,7 @@ namespace UnitTest
 		[TestMethod]
 		public void Authenticate()
 		{
-			DriveManager.Instance.Authenticate();
+			GoogleDriveManager.Instance.Authenticate();
 		}
 
 	}

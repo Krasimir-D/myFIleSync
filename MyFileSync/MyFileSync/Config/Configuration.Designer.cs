@@ -1083,7 +1083,7 @@ namespace MyFileSync.Config {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public CloudAccountsRow AddCloudAccountsRow(string Email, string Type, bool IsCurrent) {
+            public CloudAccountsRow AddCloudAccountsRow(string Email, short Type, bool IsCurrent) {
                 CloudAccountsRow rowCloudAccountsRow = ((CloudAccountsRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Email,
@@ -1121,7 +1121,7 @@ namespace MyFileSync.Config {
             private void InitClass() {
                 this.columnEmail = new global::System.Data.DataColumn("Email", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnEmail);
-                this.columnType = new global::System.Data.DataColumn("Type", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnType = new global::System.Data.DataColumn("Type", typeof(short), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnType);
                 this.columnIsCurrent = new global::System.Data.DataColumn("IsCurrent", typeof(bool), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsCurrent);
@@ -1519,9 +1519,9 @@ namespace MyFileSync.Config {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public string Type {
+            public short Type {
                 get {
-                    return ((string)(this[this.tableCloudAccounts.TypeColumn]));
+                    return ((short)(this[this.tableCloudAccounts.TypeColumn]));
                 }
                 set {
                     this[this.tableCloudAccounts.TypeColumn] = value;

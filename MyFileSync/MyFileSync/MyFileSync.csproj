@@ -84,12 +84,16 @@
   <ItemGroup>
     <Compile Include="CommonUtility.cs" />
     <Compile Include="ConfigManager.cs" />
+    <Compile Include="Config\Configuration.cs">
+      <DependentUpon>Configuration.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Config\Configuration.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Configuration.xsd</DependentUpon>
     </Compile>
-    <Compile Include="DriveManager.cs" />
+    <Compile Include="DriveManager\GoogleDriveManager.cs" />
+    <Compile Include="DriveManager\CloudDriveManager.cs" />
     <Compile Include="Enumerators\Enums.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

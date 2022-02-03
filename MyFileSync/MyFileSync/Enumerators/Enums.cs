@@ -21,4 +21,8 @@ namespace MyFileSync.Enumerators
 		Ignore = 2,
 		Sync = 3,
 	}
+	public enum CloudAccountType
+	{ 
+		Google=1
+	}
 }
