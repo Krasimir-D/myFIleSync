@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace MyFileSync.DriveManager
 {
@@ -17,14 +18,14 @@ namespace MyFileSync.DriveManager
 	{
 		private string _gmail;
 		protected UserCredential Token;
-		protected DriveService Service;
+		protected DriveService Service { get; set; }
 
 		public GoogleDriveManager(string gmail)
 		{
 			this._gmail = gmail;
 		}
 
-        public override void Authenticate()
+        public override async void Authenticate()
 		{
 			/*string folderPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GoogleWebAuthorizationBroker.Folder);
 			string userName = this._gmail.Split('@')[0].ToLower();*/
@@ -35,7 +36,7 @@ namespace MyFileSync.DriveManager
 			var clientId = "815921599110-9h5b8ui2n56liq4fkauq3oold437j2al.apps.googleusercontent.com";
 			var clientSecret = "_YHiScLaqUdhScdk8aAJIPE4";
 			//Request the user to give us access, or use the Refresh Token that was previously stored in %AppData%
-			var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+			var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
 				new ClientSecrets
 				{
 					ClientId = clientId,
@@ -45,7 +46,7 @@ namespace MyFileSync.DriveManager
 				Environment.UserName,
 				CancellationToken.None,
 				 new FileDataStore("MyFileSync")
-				).Result;
+				);
 
 			this.Token = credential;
 			this.Service = new DriveService(new BaseClientService.Initializer()
@@ -56,9 +57,30 @@ namespace MyFileSync.DriveManager
 
 		}
 
-		public override string GetUserName()
+		private async Task<DriveService> getService()
+		{
+			int count = 0;
+			while (this.Service == null)
+			{
+				await Task.Delay(1000);
+				count++;
+				if (count > 10)
+				{
+					MessageBox.Show("can't connect", "Error", MessageBoxButtons.OK);
+					return null;
+				}
+			}
+			return this.Service;
+		}
+
+		public override async Task<string> GetUserName()
         {
-			AboutResource.GetRequest request = this.Service.About.Get();
+			DriveService service = await this.getService();
+
+			if (service == null)
+				return null;
+
+			AboutResource.GetRequest request = service.About.Get();
 			request.Fields = "user";
 
 			About userInfo = null;

@@ -249,10 +249,16 @@ namespace MyFileSync.Console
 			Watcher.Instance.Summerize(Watcher.Instance.Notifications);
         }
 
-        private void btn_ConnectToAccount_Click(object sender, EventArgs e)
+		private void btn_ConnectToAccount_Click(object sender, EventArgs e)
+		{
+			this.connectToAccount();
+		}
+
+		private async void connectToAccount()
         {
-			string message = CloudDriveManager.Instance.GetUserName();
-			MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
+			string message = await CloudDriveManager.Instance.GetUserName();
+			if (message != null)
+				MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
     }
 }

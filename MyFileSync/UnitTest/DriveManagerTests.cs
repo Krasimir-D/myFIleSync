@@ -6,6 +6,7 @@ using System.Reflection;
 using static MyFileSync.Watcher;
 using System.Threading;
 using MyFileSync;
+using MyFileSync.DriveManager;
 
 namespace UnitTest
 {
