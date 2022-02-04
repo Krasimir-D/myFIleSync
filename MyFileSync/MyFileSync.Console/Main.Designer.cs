@@ -50,6 +50,7 @@ namespace MyFileSync.Console
             this.columnTime = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnActionType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.btn_ConnectToAccount = new System.Windows.Forms.Button();
             this.tabNotifications.SuspendLayout();
             this.tabDir.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -246,11 +247,22 @@ namespace MyFileSync.Console
             this.columnActionType.Text = "Action";
             this.columnActionType.Width = 76;
             // 
+            // btn_ConnectToAccount
+            // 
+            this.btn_ConnectToAccount.Location = new System.Drawing.Point(50, 170);
+            this.btn_ConnectToAccount.Name = "btn_ConnectToAccount";
+            this.btn_ConnectToAccount.Size = new System.Drawing.Size(159, 28);
+            this.btn_ConnectToAccount.TabIndex = 13;
+            this.btn_ConnectToAccount.Text = "Connect to Account";
+            this.btn_ConnectToAccount.UseVisualStyleBackColor = true;
+            this.btn_ConnectToAccount.Click += new System.EventHandler(this.btn_ConnectToAccount_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1106, 598);
+            this.Controls.Add(this.btn_ConnectToAccount);
             this.Controls.Add(this.tabNotifications);
             this.Controls.Add(this.btnAggregate);
             this.Controls.Add(this.btnSave);
@@ -290,6 +302,7 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader columnTime;
         private System.Windows.Forms.ColumnHeader columnFile;
         private System.Windows.Forms.ColumnHeader columnActionType;
+        private System.Windows.Forms.Button btn_ConnectToAccount;
     }
 }
 

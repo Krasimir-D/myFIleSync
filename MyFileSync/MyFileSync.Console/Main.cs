@@ -12,6 +12,7 @@ using MyFileSync.Enumerators;
 using System.Threading;
 using System.Timers;
 using static MyFileSync.Watcher;
+using MyFileSync.DriveManager;
 
 namespace MyFileSync.Console
 {
@@ -246,6 +247,12 @@ namespace MyFileSync.Console
         {
 			Watcher.Instance.Raw2Aggregate();
 			Watcher.Instance.Summerize(Watcher.Instance.Notifications);
+        }
+
+        private void btn_ConnectToAccount_Click(object sender, EventArgs e)
+        {
+			string message = CloudDriveManager.Instance.GetUserName();
+			MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
     }
 }

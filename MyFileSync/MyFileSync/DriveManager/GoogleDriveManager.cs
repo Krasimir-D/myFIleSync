@@ -2,6 +2,7 @@
 using Google.Apis.Drive.v3;
 using Google.Apis.Drive.v3.Data;
 using Google.Apis.Services;
+using Google.Apis.Util.Store;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -42,8 +43,8 @@ namespace MyFileSync.DriveManager
 				},
 				scopes,
 				Environment.UserName,
-				CancellationToken.None
-				//, new FileDataStore("Daimto.GoogleDrive.Auth.Store")
+				CancellationToken.None,
+				 new FileDataStore("MyFileSync")
 				).Result;
 
 			this.Token = credential;
