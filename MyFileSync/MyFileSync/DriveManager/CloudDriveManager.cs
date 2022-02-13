@@ -13,6 +13,12 @@ namespace MyFileSync.DriveManager
 		#region Static
 		protected static CloudDriveManager _driveManager;
 		#endregion
+		private string _currentEmail;
+		public string CurrentEmail
+		{
+			set { this._currentEmail = string.Format(@"{0}",value); }
+			get { return this._currentEmail; }
+		}
 
 		public abstract void Authenticate();
 
