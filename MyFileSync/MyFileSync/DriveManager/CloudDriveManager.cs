@@ -24,6 +24,8 @@ namespace MyFileSync.DriveManager
 
 		public abstract Task<string> GetUserName();
 
+		public abstract Task<string> GetUserEmail();
+
 		public static Configuration.CloudAccountsRow CloudAccount
 		{
 			get

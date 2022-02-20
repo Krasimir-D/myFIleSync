@@ -83,9 +83,22 @@ namespace MyFileSync.Console
         private async void connectToGoogleAccount()
         {
             var driveManager = new GoogleDriveManager(String.Empty);
-            string message = await driveManager.GetUserName();
-            if (message != null)
-                MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
+            driveManager.Authenticate();
+
+
+            if (await driveManager.CanConnect())
+			{
+                string email = await driveManager.GetUserEmail();
+                if (email != null)
+				{
+                    this.comboBox_Accounts.Items.Add(new AccountItem() { Email = email, AccountType = CloudAccountType.Google });
+                    //MessageBox.Show(message, "New Account", MessageBoxButtons.OK);
+                }
+            }
+            else
+			{
+                //back to current account
+			}
         }
     }
 }

@@ -73,7 +73,7 @@ namespace MyFileSync.DriveManager
 			return this.Service;
 		}
 
-		public override async Task<string> GetUserName()
+		private async Task<User> GetUser()
         {
 			DriveService service = await this.getService();
 
@@ -92,7 +92,32 @@ namespace MyFileSync.DriveManager
             {
 				//TODO
 			}
-			return userInfo.User.DisplayName;
+			return userInfo.User;
+		}
+
+		public override async Task<string> GetUserName()
+		{
+			return (await this.GetUser()).DisplayName;
+		}
+
+		public override async Task<string> GetUserEmail()
+		{
+			return (await this.GetUser()).EmailAddress;
+		}
+
+		public async Task<bool> CanConnect(int maxAttempt = 60)
+		{
+			int count = 0;
+			while (this.Service == null)
+			{
+				await Task.Delay(1000);
+				count++;
+				if (count > 60)
+				{
+					return false;
+				}
+			}
+			return true;
 		}
 	}
 }
