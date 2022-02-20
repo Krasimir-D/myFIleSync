@@ -12,17 +12,18 @@ namespace MyFileSync.DriveManager
 {
     public partial class Login_Form : Form
     {       
-        private List<string> _usedEmails = new List<string>(); // Съхрянява използваните имейли
-        string currentEmail= "";
+        private List<string> _usedEmails = new List<string>(); // Съхрянява използваните имейли        
+        string currentEmail= string.Empty;
+        GoogleDriveManager acc;
 
         public Login_Form()
         {
-            InitializeComponent();
+            InitializeComponent();            
         }
 
         private void Login_Form_Load(object sender, EventArgs e)
         {
-
+            LoadComboBox();
         }
         private bool CompareEmails(string email)
         {
@@ -39,17 +40,28 @@ namespace MyFileSync.DriveManager
 
         private void btn_Login_Click(object sender, EventArgs e)
         {
-            currentEmail = textBox_Email.Text;
-            if (CompareEmails(currentEmail) == false)
-            {
-                _usedEmails.Add(currentEmail);
-            }
-            
+            string newAccount = this.comboBox_UsedEmails.SelectedItem.ToString();
+            acc = new GoogleDriveManager(newAccount);
+            acc.CurrentEmail = newAccount;
+            acc.Authenticate();
+        }
+        private void LoadComboBox()
+        {
+            comboBox_UsedEmails.Items.Clear();
+            comboBox_UsedEmails.Items.AddRange(_usedEmails.ToArray());
+            this.comboBox_UsedEmails.Refresh();
         }
 
-        private void textBox_Email_TextChanged(object sender, EventArgs e)
+        private void btn_Add_Click(object sender, EventArgs e)
         {
-            textBox_Email.Text = comboBox_UsedEmails.SelectedItem.ToString();
+            string newAccount = textBox_Email.Text;
+            if (CompareEmails(newAccount) == false)
+            {
+                if (newAccount != string.Empty || newAccount != null)
+                    _usedEmails.Add(newAccount);
+                LoadComboBox();
+                textBox_Email.Clear();
+            }
         }
     }
 }

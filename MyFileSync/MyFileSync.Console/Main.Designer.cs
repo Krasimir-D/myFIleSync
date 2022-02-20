@@ -51,6 +51,7 @@ namespace MyFileSync.Console
             this.columnFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnActionType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.btn_ConnectToAccount = new System.Windows.Forms.Button();
+            this.btnChangeAcc = new System.Windows.Forms.Button();
             this.tabNotifications.SuspendLayout();
             this.tabDir.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -257,11 +258,22 @@ namespace MyFileSync.Console
             this.btn_ConnectToAccount.UseVisualStyleBackColor = true;
             this.btn_ConnectToAccount.Click += new System.EventHandler(this.btn_ConnectToAccount_Click);
             // 
+            // btnChangeAcc
+            // 
+            this.btnChangeAcc.Location = new System.Drawing.Point(50, 238);
+            this.btnChangeAcc.Name = "btnChangeAcc";
+            this.btnChangeAcc.Size = new System.Drawing.Size(159, 29);
+            this.btnChangeAcc.TabIndex = 14;
+            this.btnChangeAcc.Text = "Change account";
+            this.btnChangeAcc.UseVisualStyleBackColor = true;
+            this.btnChangeAcc.Click += new System.EventHandler(this.btnChangeAcc_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1106, 598);
+            this.Controls.Add(this.btnChangeAcc);
             this.Controls.Add(this.btn_ConnectToAccount);
             this.Controls.Add(this.tabNotifications);
             this.Controls.Add(this.btnAggregate);
@@ -303,6 +315,7 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader columnFile;
         private System.Windows.Forms.ColumnHeader columnActionType;
         private System.Windows.Forms.Button btn_ConnectToAccount;
+        private System.Windows.Forms.Button btnChangeAcc;
     }
 }
 

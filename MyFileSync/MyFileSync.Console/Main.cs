@@ -260,5 +260,11 @@ namespace MyFileSync.Console
 			if (message != null)
 				MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
+
+        private void btnChangeAcc_Click(object sender, EventArgs e)
+        {
+			Login_Form f1 = new Login_Form();
+			var result = f1.ShowDialog();
+        }
     }
 }
