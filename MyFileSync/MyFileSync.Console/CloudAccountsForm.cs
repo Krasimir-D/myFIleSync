@@ -44,9 +44,9 @@ namespace MyFileSync.Console
 
         private void Login_Form_Load(object sender, EventArgs e)
         {
-            this.comboBox_Accounts.Items.Add(new AccountItem() { IsNew = true, AccountType = CloudAccountType.Google });
+            this.comboBox_Accounts.Items.Add(new AccountItem() { IsNew = true, AccountType = CloudAccountType.Google }); // add new account
 
-            foreach (var row in ConfigManager.Config.CloudAccounts)
+            foreach (var row in ConfigManager.Config.CloudAccounts) // connected accounts
 			{
                 int i = this.comboBox_Accounts.Items.Add(new AccountItem() { Email = row.Email, AccountType = (CloudAccountType)row.Type });
                 if (row.IsCurrent)
@@ -70,6 +70,10 @@ namespace MyFileSync.Console
 
 		private void comboBox_Accounts_SelectedIndexChanged(object sender, EventArgs e)
 		{
+            if (this.comboBox_Accounts.SelectedItem == this.comboBox_Accounts.Items[0])
+            {
+                this.comboBox_Accounts.DropDownStyle = ComboBoxStyle.DropDown;
+            }
             AccountItem item = (AccountItem)this.comboBox_Accounts.SelectedItem;
             if (item.IsNew)
 			{
