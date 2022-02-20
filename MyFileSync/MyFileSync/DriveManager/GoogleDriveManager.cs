@@ -112,7 +112,7 @@ namespace MyFileSync.DriveManager
 			{
 				await Task.Delay(1000);
 				count++;
-				if (count > 60)
+				if (count > maxAttempt)
 				{
 					return false;
 				}

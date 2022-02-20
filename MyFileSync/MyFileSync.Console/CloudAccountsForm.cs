@@ -101,8 +101,9 @@ namespace MyFileSync.Console
             }
             else
 			{
+                MessageBox.Show("Did not connect", "Title", MessageBoxButtons.OK);
                 //back to current account
-			}
+            }
         }
     }
 }
