@@ -223,13 +223,15 @@ namespace MyFileSync.Console
         private void btnAdd_Click(object sender, EventArgs e)
         {
 			FolderBrowserDialog choosePath = new FolderBrowserDialog();
-			choosePath.ShowDialog();
-			var newPath = choosePath.SelectedPath;
-			ConfigForm f = new ConfigForm(newPath);
-			var result = f.ShowDialog();
-			if (result == DialogResult.OK)
+			if (choosePath.ShowDialog() == DialogResult.OK)
 			{
-				ChangeConfig();
+				var newPath = choosePath.SelectedPath;
+				ConfigForm f = new ConfigForm(newPath);
+				var result = f.ShowDialog();
+				if (result == DialogResult.OK)
+				{
+					ChangeConfig();
+				}
 			}
 		}
 
@@ -260,5 +262,11 @@ namespace MyFileSync.Console
 			if (message != null)
 				MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
-    }
+
+		private void btnCloudAccount_Click(object sender, EventArgs e)
+		{
+			CloudAccountsForm form = new CloudAccountsForm();
+			form.Show();
+		}
+	}
 }
