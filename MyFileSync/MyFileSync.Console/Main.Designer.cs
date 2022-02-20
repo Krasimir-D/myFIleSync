@@ -51,7 +51,6 @@ namespace MyFileSync.Console
 			this.columnFile = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnActionType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.btn_ConnectToAccount = new System.Windows.Forms.Button();
-			this.btnCloudAccount = new System.Windows.Forms.Button();
 			this.tabNotifications.SuspendLayout();
 			this.tabDir.SuspendLayout();
 			this.tabPage2.SuspendLayout();
@@ -253,26 +252,15 @@ namespace MyFileSync.Console
 			this.btn_ConnectToAccount.Name = "btn_ConnectToAccount";
 			this.btn_ConnectToAccount.Size = new System.Drawing.Size(119, 23);
 			this.btn_ConnectToAccount.TabIndex = 13;
-			this.btn_ConnectToAccount.Text = "Connect to Account";
+			this.btn_ConnectToAccount.Text = "Connect to account";
 			this.btn_ConnectToAccount.UseVisualStyleBackColor = true;
 			this.btn_ConnectToAccount.Click += new System.EventHandler(this.btn_ConnectToAccount_Click);
-			// 
-			// btnCloudAccount
-			// 
-			this.btnCloudAccount.Location = new System.Drawing.Point(38, 229);
-			this.btnCloudAccount.Name = "btnCloudAccount";
-			this.btnCloudAccount.Size = new System.Drawing.Size(119, 23);
-			this.btnCloudAccount.TabIndex = 14;
-			this.btnCloudAccount.Text = "Cloud account";
-			this.btnCloudAccount.UseVisualStyleBackColor = true;
-			this.btnCloudAccount.Click += new System.EventHandler(this.btnCloudAccount_Click);
 			// 
 			// Main
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(830, 486);
-			this.Controls.Add(this.btnCloudAccount);
 			this.Controls.Add(this.btn_ConnectToAccount);
 			this.Controls.Add(this.tabNotifications);
 			this.Controls.Add(this.btnAggregate);
@@ -313,7 +301,6 @@ namespace MyFileSync.Console
         private System.Windows.Forms.ColumnHeader columnFile;
         private System.Windows.Forms.ColumnHeader columnActionType;
         private System.Windows.Forms.Button btn_ConnectToAccount;
-		private System.Windows.Forms.Button btnCloudAccount;
-	}
+    }
 }
 

@@ -1,4 +1,5 @@
-﻿using MyFileSync.Enumerators;
+﻿using MyFileSync.DriveManager;
+using MyFileSync.Enumerators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,8 +14,25 @@ using System.Windows.Forms;
 namespace MyFileSync.Console
 {
     public partial class CloudAccountsForm : Form
-    {       
-        private List<string> _usedEmails = new List<string>(); // Съхрянява използваните имейли
+    {
+        public class AccountItem
+		{
+            public string Email;
+            public CloudAccountType AccountType;
+            public bool IsNew;
+
+            public override string ToString()
+			{
+                if (this.IsNew)
+				{
+                    return String.Format("Connect new {0} account", this.AccountType.ToString());
+				} else
+				{
+                    return String.Format("{0} ({1})", this.Email, this.AccountType.ToString());
+				}
+			}
+		}
+
         private string _newEmail= String.Empty;
 
         public CloudAccountsForm()
@@ -22,72 +40,52 @@ namespace MyFileSync.Console
             InitializeComponent();
 
             this.StartPosition = FormStartPosition.CenterScreen;
-
-            foreach (var row in ConfigManager.Config.CloudAccounts)
-                _usedEmails.Add(row.Email);
-
-            this.comboBox_UsedEmails.Items.AddRange(_usedEmails.ToArray());
         }
 
         private void Login_Form_Load(object sender, EventArgs e)
         {
+            this.comboBox_Accounts.Items.Add(new AccountItem() { IsNew = true, AccountType = CloudAccountType.Google });
 
+            foreach (var row in ConfigManager.Config.CloudAccounts)
+			{
+                int i = this.comboBox_Accounts.Items.Add(new AccountItem() { Email = row.Email, AccountType = (CloudAccountType)row.Type });
+                if (row.IsCurrent)
+				{
+                    this.comboBox_Accounts.SelectedIndex = i;
+                }
+            }
         }
         private void btn_Login_Click(object sender, EventArgs e)
         {
-            _newEmail = textBox_Email.Text;
+            //_newEmail = textBox_Email.Text;
 
-            foreach (var row in ConfigManager.Config.CloudAccounts)
-                row.IsCurrent = (row.Email == _newEmail);
+            //foreach (var row in ConfigManager.Config.CloudAccounts)
+            //    row.IsCurrent = (row.Email == _newEmail);
 
-            if (!_usedEmails.Contains(_newEmail))
-                ConfigManager.Config.CloudAccounts.AddCloudAccountsRow(_newEmail, (int)CloudAccountType.Google, true);
+            //if (!_usedEmails.Contains(_newEmail))
+            //    ConfigManager.Config.CloudAccounts.AddCloudAccountsRow(_newEmail, (int)CloudAccountType.Google, true);
 
-            ConfigManager.Save();
+            //ConfigManager.Save();
         }
 
-        private void textBox_Email_TextChanged(object sender, EventArgs e)
-        {
-            string email = textBox_Email.Text;
-            bool valid = this.isValidEmail(email);
-            this.btn_Change.Enabled = valid;
-
-            if (valid)
+		private void comboBox_Accounts_SelectedIndexChanged(object sender, EventArgs e)
+		{
+            AccountItem item = (AccountItem)this.comboBox_Accounts.SelectedItem;
+            if (item.IsNew)
 			{
-                this._newEmail = email;
-                if (this._usedEmails.Contains(email))
+                if (item.AccountType == CloudAccountType.Google)
 				{
-                    if (comboBox_UsedEmails.SelectedItem == null || comboBox_UsedEmails.SelectedItem.ToString() != email)
-                        comboBox_UsedEmails.SelectedItem = email;
-                } else
-				{
-                    comboBox_UsedEmails.SelectedItem = null;
+                    this.connectToGoogleAccount();
                 }
-			}
+            }
         }
 
-        private bool isValidEmail(string email)
-		{
-            Regex regex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
-            Match match = regex.Match(email);
-            return match.Success;
+        private async void connectToGoogleAccount()
+        {
+            var driveManager = new GoogleDriveManager(String.Empty);
+            string message = await driveManager.GetUserName();
+            if (message != null)
+                MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
-
-		private void comboBox_UsedEmails_SelectedIndexChanged(object sender, EventArgs e)
-		{
-            if (comboBox_UsedEmails.SelectedItem == null)
-                return;
-
-            if (comboBox_UsedEmails.SelectedItem.ToString() == this._newEmail)
-                return;
-
-            this.textBox_Email.Text = comboBox_UsedEmails.SelectedItem.ToString();
-
-        }
-
-		private void comboBox_UsedEmails_DrawItem(object sender, DrawItemEventArgs e)
-		{
-            
-		}
-	}
+    }
 }

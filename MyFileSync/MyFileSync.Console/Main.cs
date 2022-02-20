@@ -253,7 +253,10 @@ namespace MyFileSync.Console
 
 		private void btn_ConnectToAccount_Click(object sender, EventArgs e)
 		{
-			this.connectToAccount();
+			//this.connectToAccount();
+
+			CloudAccountsForm form = new CloudAccountsForm();
+			form.Show();
 		}
 
 		private async void connectToAccount()
@@ -262,11 +265,5 @@ namespace MyFileSync.Console
 			if (message != null)
 				MessageBox.Show(message, "GetUserName_result", MessageBoxButtons.OK);
         }
-
-		private void btnCloudAccount_Click(object sender, EventArgs e)
-		{
-			CloudAccountsForm form = new CloudAccountsForm();
-			form.Show();
-		}
-	}
+    }
 }
